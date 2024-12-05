@@ -11,7 +11,7 @@ useMeta({
 const JwtStore = useJwtStore();
 
 onBeforeMount(async () => {
-  // await JwtStore.refreshAccessToken();
+  await JwtStore.refreshAccessToken();
 });
 </script>
 

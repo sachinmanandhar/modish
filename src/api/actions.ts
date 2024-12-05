@@ -12,4 +12,10 @@ export enum Action {
   SetPassword = "user/set_password",
 
   district = "api/district",
+
+  Products = "products",
+
+  Categories="categories",
+
+  Orders="orders"
 }
