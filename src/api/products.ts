@@ -19,4 +19,8 @@ export default new (class ProductsAPI {
     const response = await postAPI(Action.Orders,new_data);
     return response;
   }
+  public async getFrontContent() {
+    const response = await getAPI(Action.FrontContent);
+    return response;
+  }
 })();

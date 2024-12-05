@@ -5,6 +5,8 @@ export const useProductsStore = defineStore("products", {
     return {
       Products: [],
       Categories: [],
+      FrontContent: [],
+      SelectedCategory: null as any
     };
   },
   getters:{
@@ -13,6 +15,12 @@ export const useProductsStore = defineStore("products", {
       },
       getCategories: (state) => {
         return state.Categories;
+        },
+      getFrontContent: (state) => {
+        return state.FrontContent;
+      },
+      getSelectedCategory: (state) => {
+        return state.SelectedCategory;
       },
   },
   actions:{
@@ -27,6 +35,10 @@ export const useProductsStore = defineStore("products", {
     async fetchCategories(){
       const response = await ProductsAPI.getCategories();
       this.Categories = response;
+    },
+    async fetchFrontContent(){
+      const response = await ProductsAPI.getFrontContent();
+      this.FrontContent = response;
     }
   }
 });

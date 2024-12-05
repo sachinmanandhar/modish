@@ -1,15 +1,3 @@
-<script setup lang="ts">
-import { ref } from "vue";
-const slide = ref("style");
-
-const scrollToSection = (elementId: string) => {
-  const element = document.getElementById(elementId);
-  if (element) {
-    element.scrollIntoView({ behavior: 'smooth' });
-  }
-};
-</script>
-
 <template>
   <q-carousel
     :autoplay="5000"
@@ -27,64 +15,49 @@ const scrollToSection = (elementId: string) => {
     class="fashion-carousel"
   >
     <q-carousel-slide
-      name="style"
+      v-for="(content, index) in ProductContent"
+      :key="index"
+      :name="index.toString()"
       class="column no-wrap"
-      img-src="@/assets/images/slider1.jpeg"
+      :img-src="content.image"
     >
-      <div class="carousel-caption right">
-        <h2 class="text-h2 text-weight-light">Summer Collection</h2>
-        <div class="subtitle">Discover the latest trends in summer fashion</div>
+      <div class="carousel-caption left">
+        <h2 class="text-h2 text-weight-light">{{ content.title }}</h2>
+        <div class="subtitle">{{ content.subtitle }}</div>
         <q-btn
           class="q-mt-md"
           color="secondary"
           label="Shop Now"
           padding="sm lg"
           unelevated
-          @click="scrollToSection('shop')"
-        />
-      </div>
-    </q-carousel-slide>
-
-    <q-carousel-slide
-      name="tv"
-      class="column no-wrap"
-      img-src="@/assets/images/slider2.jpeg"
-    >
-      <div class="carousel-caption right">
-        <h2 class="text-h2 text-weight-light">Accessories Edit</h2>
-        <div class="subtitle">Complete your look with our curated accessories</div>
-        <q-btn
-          class="q-mt-md"
-          color="secondary"
-          label="Explore More"
-          padding="sm lg"
-          unelevated
-          @click="scrollToSection('shop')"
-        />
-      </div>
-    </q-carousel-slide>
-
-    <q-carousel-slide
-      name="layers"
-      class="column no-wrap"
-      img-src="@/assets/images/slider3.jpeg"
-    >
-      <div class="carousel-caption left">
-        <h2 class="text-h2 text-weight-light">Designer Collection</h2>
-        <div class="subtitle">Elevate your style with exclusive pieces</div>
-        <q-btn
-          class="q-mt-md"
-          color="secondary"
-          label="View Collection"
-          padding="sm lg"
-          unelevated
-          @click="scrollToSection('shop')"
+          @click="scrollToSection('shop',content.category)"
         />
       </div>
     </q-carousel-slide>
   </q-carousel>
 </template>
+<script setup lang="ts">
+import { ref,computed ,onBeforeMount} from 'vue';
+import { useProductsStore } from '@/stores/products';
 
+const ProductStore = useProductsStore()
+const ProductContent = computed((): any => {
+  return ProductStore.getFrontContent;
+});
+
+const slide = ref("0");
+
+const scrollToSection = (elementId: string,category:string) => {
+  ProductStore.SelectedCategory = category
+  const element = document.getElementById(elementId);
+  if (element) {
+    element.scrollIntoView({ behavior: 'smooth' });
+  }
+};
+onBeforeMount(async () => {
+  await ProductStore.fetchFrontContent()
+})
+</script>
 <style scoped>
 .fashion-carousel {
   background: #1a1a1a;
@@ -95,21 +68,17 @@ const scrollToSection = (elementId: string) => {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  padding: 2rem;
-  max-width: 450px;
+  padding: 2.5rem;
+  max-width: 500px;
   color: #333;
   
   @media (max-width: 600px) {
-    padding: 1.5rem;
-    max-width: 85%;
+    padding: 2rem;
+    max-width: 90%;
     left: 50% !important;
     right: auto !important;
     transform: translate(-50%, -50%);
   }
-}
-
-.carousel-caption.right {
-  right: 10%;
 }
 
 .carousel-caption.left {

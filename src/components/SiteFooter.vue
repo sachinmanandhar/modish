@@ -45,11 +45,11 @@
             </div>
             <div class="row items-center">
               <q-icon name="phone" size="sm" class="q-mr-sm" />
-              <span>+1 234 567 890</span>
+              <span>+977- 9860913842</span>
             </div>
             <div class="row items-center">
               <q-icon name="email" size="sm" class="q-mr-sm" />
-              <span>modishinfo@gmail.com</span>
+              <span>themodishera@gmail.com</span>
             </div>
           </div>
         </div>

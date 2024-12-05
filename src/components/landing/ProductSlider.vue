@@ -13,15 +13,16 @@
         emit-value
       />
       <h4 class="title text-bold">Featured Products</h4>
+      <!-- {{ Categories }} -->
     </div>
-  <!-- {{ Categories }} -->
-    <Carousel :wrap-around="true" :autoplay="3000" :breakpoints="breakpoints">
+  <Carousel :wrap-around="true" :autoplay="3000" :breakpoints="breakpoints">
       <Slide v-for="product in Products" :key="product.id">
         <q-card class="product-card q-ma-sm">
           <q-img
             :src="product.image"
             :ratio="1"
             class="product-image"
+            @click="showImageDialog(product.image)"
           />
           <q-card-section>
             <div class="text-subtitle2 product-category">#{{ product.id }}</div>
@@ -34,6 +35,19 @@
               label="Buy Now"
               @click="showOrderDialog(product.id)"
             />
+            <q-expansion-item
+              class="q-mt-sm"
+              switch-toggle-side
+              dense
+              expand-separator
+              label="Description"
+            >
+              <q-card>
+                <q-card-section>
+                  {{ product.description }}
+                </q-card-section>
+              </q-card>
+            </q-expansion-item>
           </q-card-section>
         </q-card>
       </Slide>
@@ -129,11 +143,18 @@
         </q-card-section>
       </q-card>
     </q-dialog>
+
+    <q-dialog v-model="imageDialog" style="width: 100vw; height: 100vh;overflow: hidden;">
+      <q-img 
+        :src="selectedImage" 
+        style="object-fit: contain;;overflow: hidden;" 
+      />
+    </q-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref,computed ,onBeforeMount} from 'vue';
+import { ref,computed ,onBeforeMount, watch} from 'vue';
 import { Carousel, Slide, Pagination, Navigation } from 'vue3-carousel'
 import { useProductsStore } from '@/stores/products';
 import ProductsAPI from '@/api/products';
@@ -147,7 +168,11 @@ const Products = computed((): any => {
   return ProductStore.getProducts;
 });
 const Categories = computed((): any => {
-  return ProductStore.getCategories;
+  const data = [{ "label": 'All', value: null }, ...ProductStore.getCategories];
+  return data
+});
+const SelectedCategory = computed((): any => {
+  return ProductStore.getSelectedCategory;
 });
 
 const handleCategoryChange =async () => {
@@ -221,6 +246,19 @@ const submitOrder = async () => {
     });
   }
 };
+
+const imageDialog = ref(false);
+const selectedImage = ref('');
+
+const showImageDialog = (imageUrl: string) => {
+  selectedImage.value = imageUrl;
+  imageDialog.value = true;
+};
+
+watch(SelectedCategory, async (newValue) => {
+  selectedCategory.value = newValue;
+  await ProductStore.fetchProducts(selectedCategory.value);
+});
 
 </script>
 
