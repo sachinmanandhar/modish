@@ -14,11 +14,16 @@ const router = createRouter({
           name: "landing-page",
           component: () => import("@/views/LandingPage.vue"),
         },
-        // {
-        //   path: "dashboard",
-        //   name: "dashboard",
-        //   component: () => import("@/views/DashboardView.vue"),
-        // },
+        {
+          path: "dashboard",
+          name: "dashboard",
+          component: () => import("@/views/DashboardView.vue"),
+        },
+        {
+          path: "product",
+          name: "product",
+          component: () => import("@/views/ProductView.vue"),
+        },
       ],
     },
     // {
