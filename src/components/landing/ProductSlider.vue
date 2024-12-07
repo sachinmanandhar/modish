@@ -15,7 +15,7 @@
       <h4 class="title text-bold">Featured Products</h4>
       <!-- {{ Categories }} -->
     </div>
-  <Carousel :wrap-around="true" :autoplay="3000" :breakpoints="breakpoints">
+  <Carousel :wrap-around="true"  :breakpoints="breakpoints">
       <Slide v-for="product in Products" :key="product.id">
         <q-card class="product-card q-ma-sm">
           <q-img
@@ -191,11 +191,21 @@ const breakpoints = {
     itemsToShow: 2,
     snapAlign: 'center',
   },
-  // Desktop
+  // Small Laptop
   1024: {
+    itemsToShow: 4,
+    snapAlign: 'start',
+  },
+  // Large Laptop/Desktop
+  1440: {
     itemsToShow: 5,
     snapAlign: 'start',
   },
+  // // Extra Large Screens
+  // 1800: {
+  //   itemsToShow: 5,
+  //   snapAlign: 'start',
+  // },
 }
 
 onBeforeMount(async () => {
@@ -284,8 +294,9 @@ watch(SelectedCategory, async (newValue) => {
 }
 .product-card {
   transition: transform 0.3s ease;
-  width: 280px;
+  width: 260px;
   margin: 0 auto;
+  height: 100%;
 }
 
 .product-card:hover {
@@ -314,13 +325,14 @@ watch(SelectedCategory, async (newValue) => {
 }
 
 :deep(.carousel__slide) {
-  padding: 10px;
-  width: 280px !important;
-  min-width: 280px;
+  padding: 10px 15px;
+  width: 260px !important;
+  min-width: 260px;
 }
 
 :deep(.carousel__track) {
-  gap: 1rem;
+  gap: 1.5rem;
+  padding: 0.5rem 0;
 }
 
 :deep(.carousel__prev),

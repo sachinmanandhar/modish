@@ -41,8 +41,8 @@ const items = [
 .card {
   background-color: #e0b9e6;
   border-radius: 50%;
-  width: 300px;
-  height: 300px;
+  width: 220px;
+  height: 220px;
   position: relative;
   overflow: hidden;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -80,6 +80,13 @@ const items = [
 
 .card:hover .card-title {
   opacity: 1;
+}
+
+@media (max-width: 1024px) {
+  .card {
+    width: 180px;
+    height: 180px;
+  }
 }
 
 @media (max-width: 600px) {
