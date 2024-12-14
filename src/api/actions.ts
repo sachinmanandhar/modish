@@ -18,5 +18,7 @@ export enum Action {
   Categories="categories",
 
   Orders="orders",
-  FrontContent="front-content"
+  FrontContent="front-content",
+  CategoryDetail="category-detail",
+  WomensWear="womens-wear"
 }

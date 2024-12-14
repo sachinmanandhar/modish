@@ -28,7 +28,6 @@
             <div class="text-subtitle2 product-category">#{{ product.id }}</div>
             <div class="text-h6 product-title">{{ product.name }}</div>
             <div class="text-subtitle2 product-category">{{ product.category }}</div>
-            <div class="text-h6 product-price">NPR {{ product.price }}</div>
             <q-btn 
               color="primary" 
               class="full-width q-mt-sm"
@@ -45,6 +44,19 @@
               <q-card>
                 <q-card-section>
                   {{ product.description }}
+                  
+                  <div class="tags-container q-mt-sm">
+                    <q-chip
+                      v-for="tag in product.tags"
+                      :key="tag"
+                      size="sm"
+                      class="tag-chip"
+                      color="primary"
+                      text-color="white"
+                    >
+                      #{{ tag }}
+                    </q-chip>
+                  </div>
                 </q-card-section>
               </q-card>
             </q-expansion-item>
@@ -370,5 +382,17 @@ watch(SelectedCategory, async (newValue) => {
 .category-select {
   width: 200px;
   left: 0;
+}
+
+.tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 8px 0;
+}
+
+.tag-chip {
+  font-size: 0.8rem;
+  padding: 2px 8px;
 }
 </style>

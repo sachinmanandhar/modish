@@ -11,6 +11,10 @@ export default new (class ProductsAPI {
     const response = await getAPI(Action.Categories);
     return response;
   }
+  public async getWomensWear() {
+    const response = await getAPI(Action.WomensWear);
+    return response;
+  }
   public async postOrders(data:any) {
     const new_data = {
       status: 'pending',
@@ -21,6 +25,11 @@ export default new (class ProductsAPI {
   }
   public async getFrontContent() {
     const response = await getAPI(Action.FrontContent);
+    return response;
+  }
+  public async getCategoryDetail(categoryId:any) {
+    const params  = categoryId ? `?category=${categoryId}` : ''
+    const response = await getAPI(Action.CategoryDetail,params);
     return response;
   }
 })();

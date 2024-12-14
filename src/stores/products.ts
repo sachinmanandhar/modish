@@ -6,7 +6,8 @@ export const useProductsStore = defineStore("products", {
       Products: [],
       Categories: [],
       FrontContent: [],
-      SelectedCategory: null as any
+      SelectedCategory: null as any,
+      CategoryDetail: [] as any
     };
   },
   getters:{
@@ -21,6 +22,9 @@ export const useProductsStore = defineStore("products", {
       },
       getSelectedCategory: (state) => {
         return state.SelectedCategory;
+        },
+      getCategoryDetail: (state) => {
+        return state.CategoryDetail;
       },
   },
   actions:{
@@ -39,6 +43,10 @@ export const useProductsStore = defineStore("products", {
     async fetchFrontContent(){
       const response = await ProductsAPI.getFrontContent();
       this.FrontContent = response;
+    },
+    async fetchCategoryDetail(categoryId:any){
+      const response = await ProductsAPI.getCategoryDetail(categoryId);
+      this.CategoryDetail = response;
     }
   }
 });

@@ -4,12 +4,10 @@
     </div>
   <div class="product-list-container">
     <!-- Hero Section -->
-    <div class="hero-section q-pa-xl text-center">
-      <h1 class="text-h3 text-weight-bold q-mb-md">Jewelry Collection</h1>
+    <div class="hero-section q-pa-xl text-center" v-if="CategoryDetail && CategoryDetail.length > 0">
+      <h1 class="text-h3 text-weight-bold q-mb-md"> {{ CategoryDetail[0].title }}</h1>
       <p class="description q-mx-auto">
-        Explore our exquisite jewelry collection that blends tradition and modernity with stunning designs. 
-        From premium golden bracelets adorned with sparkling gemstones and intricate motifs to sleek 
-        stainless pieces with elegant leaf-shaped accents, each item is crafted to perfection.
+        {{ CategoryDetail[0].description }}
       </p>
     </div>
 
@@ -110,20 +108,20 @@
             <q-input
               v-model="orderForm.name"
               label="Full Name"
-              :rules="[val => !!val || 'Name is required']"
+              :rules="[(val:any) => !!val || 'Name is required']"
               outlined
             />
             <q-input
               v-model="orderForm.phone"
               label="Phone Number"
-              :rules="[val => !!val || 'Phone number is required']"
+              :rules="[(val:any) => !!val || 'Phone number is required']"
               outlined
             />
             <q-input
               v-model="orderForm.address"
               label="Delivery Address"
               type="textarea"
-              :rules="[val => !!val || 'Address is required']"
+              :rules="[(val:any) => !!val || 'Address is required']"
               outlined
             />
             <q-input
@@ -131,8 +129,8 @@
               label="Quantity"
               type="number"
               :rules="[
-                val => val > 0 || 'Quantity must be greater than 0',
-                val => val <= 10 || 'Maximum quantity is 10'
+                (val:any) => val > 0 || 'Quantity must be greater than 0',
+                (val:any) => val <= 10 || 'Maximum quantity is 10'
               ]"
               outlined
             />
@@ -156,9 +154,10 @@
 import { ref, computed, onBeforeMount } from 'vue';
 import { useProductsStore } from '@/stores/products';
 import { useQuasar } from 'quasar';
-
+import { useRoute } from 'vue-router';
 const ProductStore = useProductsStore();
 const $q = useQuasar();
+const $route = useRoute();
 
 // Filter and Sort
 const selectedCategory = ref(null);
@@ -169,12 +168,13 @@ const sortOptions = [
   { label: 'Price (Low to High)', value: 'price_asc' },
   { label: 'Price (High to Low)', value: 'price_desc' },
 ];
-
 // Computed Properties
 const Categories = computed(() => {
   return [{ label: 'All', value: null }, ...ProductStore.getCategories];
 });
-
+const CategoryDetail = computed((): any => {
+  return ProductStore.getCategoryDetail;
+});
 const filteredProducts = computed(() => {
   let products :any= ProductStore.getProducts;
 //   products = [{"id":3,"name":"bracelet","description":"demo des","price":800,"category":"Jewellery","image":"http://127.0.0.1:8000/media/products/download_2.jpeg"},{"id":2,"name":"bag","description":"demo bag","price":1000,"category":"Bags","image":"http://127.0.0.1:8000/media/products/download_1.jpeg"},{"id":1,"name":"Earrings","description":"earrings","price":200,"category":"Jewellery","image":"http://127.0.0.1:8000/media/products/download.jpeg"},{"id":3,"name":"bracelet","description":"demo des","price":800,"category":"Jewellery","image":"http://127.0.0.1:8000/media/products/download_2.jpeg"},{"id":2,"name":"bag","description":"demo bag","price":1000,"category":"Bags","image":"http://127.0.0.1:8000/media/products/download_1.jpeg"},{"id":1,"name":"Earrings","description":"earrings","price":200,"category":"Jewellery","image":"http://127.0.0.1:8000/media/products/download.jpeg"},{"id":3,"name":"bracelet","description":"demo des","price":800,"category":"Jewellery","image":"http://127.0.0.1:8000/media/products/download_2.jpeg"},{"id":2,"name":"bag","description":"demo bag","price":1000,"category":"Bags","image":"http://127.0.0.1:8000/media/products/download_1.jpeg"},{"id":1,"name":"Earrings","description":"earrings","price":200,"category":"Jewellery","image":"http://127.0.0.1:8000/media/products/download.jpeg"},{"id":3,"name":"bracelet","description":"demo des","price":800,"category":"Jewellery","image":"http://127.0.0.1:8000/media/products/download_2.jpeg"},{"id":2,"name":"bag","description":"demo bag","price":1000,"category":"Bags","image":"http://127.0.0.1:8000/media/products/download_1.jpeg"},{"id":1,"name":"Earrings","description":"earrings","price":200,"category":"Jewellery","image":"http://127.0.0.1:8000/media/products/download.jpeg"}]
@@ -260,8 +260,13 @@ const showOrderDialog = (productId: number) => {
 };
 
 onBeforeMount(async () => {
-  await ProductStore.fetchProducts();
+  const categoryId = $route.params.categoryId
+  await ProductStore.fetchCategoryDetail(categoryId);
+  await ProductStore.fetchProducts(categoryId);
   await ProductStore.fetchCategories();
+
+  selectedProductId.value=  categoryId
+  console.log("categoryId",categoryId);
 });
 </script>
 

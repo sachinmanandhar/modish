@@ -1,22 +1,40 @@
 <template>
-  <div class="womens-wear q-mt-md">
+  <div class="womens-wear q-mt-md" v-if="items.length > 0">
     <h4 class="title text-bold">Women's Wear</h4>
     <div class="card-container flex justify-around">
-      <div class="card" v-for="item in items" :key="item.name">
+      <div 
+        class="card" 
+        v-for="item in items" 
+        :key="item.name"
+        @click="navigateToProduct(item.category)"
+        style="cursor: pointer"
+      >
         <img :src="item.image" :alt="item.name" class="card-image" />
-        <div class="card-title">{{ item.name }}</div>
+        <div class="card-title">{{ item.category_name }}</div>
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-const items = [
-  { name: 'Earrings', image: '/static/images/earrings.jpeg' },
-  { name: 'Bag', image: '/static/images/bag.jpeg' },
-  { name: 'Locket', image: '/static/images/locket.jpeg' },
-  { name: 'Bracelet', image: '/static/images/bracelet.jpeg' },
-];
+import { ref, computed, onBeforeMount } from 'vue';
+import ProductsAPI from '@/api/products';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+const items :any = ref([]);
+
+const navigateToProduct = (categoryId: string) => {
+  router.push({
+    name: 'product',
+    params: { categoryId }
+  });
+};
+
+onBeforeMount(async () => {
+  const data = await ProductsAPI.getWomensWear();
+  items.value = data;
+});
 </script>
 
 <style scoped>
