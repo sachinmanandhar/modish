@@ -27,7 +27,7 @@ const items :any = ref([]);
 const navigateToProduct = (categoryId: string) => {
   router.push({
     name: 'product',
-    params: { categoryId }
+    query: { categoryId }
   });
 };
 

@@ -18,6 +18,7 @@
   <Carousel :wrap-around="true"  :breakpoints="breakpoints">
       <Slide v-for="product in Products" :key="product.id">
         <q-card class="product-card q-ma-sm">
+          
           <q-img
             :src="product.image"
             :ratio="1"
@@ -28,12 +29,23 @@
             <div class="text-subtitle2 product-category">#{{ product.id }}</div>
             <div class="text-h6 product-title">{{ product.name }}</div>
             <div class="text-subtitle2 product-category">{{ product.category }}</div>
-            <q-btn 
-              color="primary" 
-              class="full-width q-mt-sm"
-              label="Buy Now"
-              @click="showOrderDialog(product.id)"
-            />
+            <div class="text-h6 product-price">NRS {{ product.price }}</div>
+            <div class="row q-gutter-sm justify-center">
+              <q-btn 
+                color="primary" 
+                class="q-mt-sm"
+                label="Add to Cart"
+                @click="addToCart(product)"
+              />
+              <!-- <q-btn 
+              outline
+                color="primary" 
+                class="q-mt-sm"
+                label="Checkout"
+                @click="goToCheckout(product.id)"
+              /> -->
+
+            </div>
             <q-expansion-item
               class="q-mt-sm"
               switch-toggle-side
@@ -171,7 +183,11 @@ import { Carousel, Slide, Pagination, Navigation } from 'vue3-carousel'
 import { useProductsStore } from '@/stores/products';
 import ProductsAPI from '@/api/products';
 import { useQuasar } from 'quasar';
+import { useGeneralStore } from '@/stores/general';
+import { useRouter } from 'vue-router';
 const ProductStore = useProductsStore()
+const generalStore = useGeneralStore();
+const router = useRouter();
 
 const selectedCategory = ref(null);
 // const categoryOptions = ref(['all', 'electronics', 'clothing', 'accessories']);
@@ -261,6 +277,9 @@ const submitOrder = async () => {
       type: 'positive',
       message: 'Your order has been placed, we will get back to you shortly'
     });
+
+    router.push({ name: 'product', params: { categoryId: '0' }});
+    
   } catch (error) {
     $q.notify({
       type: 'negative',
@@ -281,6 +300,22 @@ watch(SelectedCategory, async (newValue) => {
   selectedCategory.value = newValue;
   await ProductStore.fetchProducts(selectedCategory.value);
 });
+
+const addToCart = (product: any) => {
+  generalStore.addToCart(product);
+  $q.notify({
+    type: 'positive',
+    message: 'Added to cart successfully!'
+  });
+};
+
+const goToCheckout = (productId:any) => {
+  // You can pass product data as route query parameters if needed
+  router.push({
+    name: 'checkout',
+    query: { productId: productId }
+  });
+};
 
 </script>
 

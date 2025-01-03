@@ -2,6 +2,7 @@
 import { ref, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useQuasar } from "quasar";
+import { useMeta } from 'quasar'
 import {
   fasArrowRightToBracket,
   fasUserPlus,
@@ -103,143 +104,188 @@ const scrollToSection = (route: string) => {
 };
 
 const quickLinks = [
-  { title: 'Home', route: '#home' },
-  { title: 'Shop', route: '#shop' },
-  { title: 'Sale', route: '#sale' },
-  { title: 'About Us', route: '#about' },
-  { title: 'Contact', route: '/contact' }
+  { title: 'Home', route: '/' },
+  { title: 'Shop', route: '/product' },
+  // { title: 'Sale', route: '#sale' },
+  { title: 'About Us', route: '/about' },
+ 
+  // { title: 'Contact', route: '/contact' },
+  { title: 'Checkout', route: '/checkout' },
 ];
+
+const phoneNumber = '+9779860913842'; // Store phone number as a constant for reuse
+
+const copyToClipboard = async (e: Event) => {
+  e.preventDefault(); // Prevent the default tel: behavior
+  try {
+    await navigator.clipboard.writeText(phoneNumber);
+    $q.notify({
+      message: 'Phone number copied to clipboard!',
+      type: 'positive',
+      position: 'top',
+      timeout: 2000
+    });
+    // Optional: Still trigger the call after copying
+    window.location.href = `tel:${phoneNumber}`;
+  } catch (err) {
+    $q.notify({
+      message: 'Failed to copy number',
+      type: 'negative',
+      position: 'top'
+    });
+  }
+};
+
+useMeta({
+  title: 'Modish Era - Fashion & Style',
+  meta: {
+    description: { name: 'description', content: 'Modish Era - Your premier destination for fashion, style, and trendy clothing. Shop the latest collections of contemporary fashion.' }
+  }
+})
 </script>
 
 <template>
-  <q-header :reveal="true">
-    <q-toolbar
-      class="container-width"
-      :class="{
-        'text-light bg-dark': $q.dark.isActive,
-        'text-black bg-grey-3': !$q.dark.isActive,
-      }"
-      style="flex-wrap: wrap"
-    >
-      <q-toolbar-title
-        shrink
-        class="toolbar-title row items-center cursor-pointer"
+  <header role="banner">
+    <q-header :reveal="true">
+      <q-toolbar
+        class="container-width"
+        :class="{
+          'text-light bg-dark': $q.dark.isActive,
+          'text-black bg-grey-3': !$q.dark.isActive,
+        }"
+        style="flex-wrap: wrap"
       >
-        <q-btn
-          flat
-          round
-          icon="menu"
-          class="hamburger-menu"
-          @click="toggleSidebar"
-        />
-        <div class="row">
-          <router-link to="/" class="site-logo row q-mr-xs">
-            <img
-              style="height: 5.2rem"
-              src="@/assets/images/modish.png"
-            />
-            <div class="site-title column justify-center q-ml-sm q-mr-md">
-              <span class="text-h4 text-weight-bold">Modish</span>
-              <span class="text-subtitle1">Era</span>
-            </div>
+        <q-toolbar-title
+          shrink
+          class="toolbar-title row items-center cursor-pointer"
+        >
+          <q-btn
+            flat
+            round
+            icon="menu"
+            class="hamburger-menu"
+            @click="toggleSidebar"
+          />
+          <div class="row">
+            <router-link to="/" class="site-logo row q-mr-xs">
+              <img
+                style="height: 5.2rem"
+                src="@/assets/images/modish.png"
+                alt="Modish Era Logo - Fashion & Style Store"
+              />
+              <div class="site-title column justify-center q-ml-sm q-mr-md">
+                <h1 class="text-h4 text-weight-bold">Modish</h1>
+                <h2 class="text-subtitle1">Era</h2>
+              </div>
 
-          </router-link>
-        </div>
-      </q-toolbar-title>
+            </router-link>
+          </div>
+        </q-toolbar-title>
 
-      <div :data-expanded="sidebarOpen" id="site-controls">
-        <nav id="site-nav">
-          <div class="hamburger-menu-container row items-center q-mb-md">
-            <q-btn
-              flat
-              round
-              icon="menu"
-              class="hamburger-menu"
-              @click="closeSidebar"
-            />
+        <div :data-expanded="sidebarOpen" id="site-controls">
+          <nav id="site-nav" role="navigation" aria-label="Main navigation">
+            <div class="hamburger-menu-container row items-center q-mb-md">
+              <q-btn
+                flat
+                round
+                icon="menu"
+                class="hamburger-menu"
+                @click="closeSidebar"
+              />
 
-            <div class="row">
-              <router-link to="/" class="site-logo row q-mr-xs">
-                <img
-                  style="height: 5.5rem"
-                  src="@/assets/images/modish.png"
-                />
-                <div class="site-title column justify-center q-ml-sm">
-                  <span class="text-h4 text-weight-bold">Modish</span>
-                  <span class="text-subtitle1">Era</span>
+              <div class="row">
+                <router-link to="/" class="site-logo row q-mr-xs">
+                  <img
+                    style="height: 5.5rem"
+                    src="@/assets/images/modish.png"
+                  />
+                  <div class="site-title column justify-center q-ml-sm">
+                    <h1 class="text-h4 text-weight-bold">Modish</h1>
+                    <h2 class="text-subtitle1">Era</h2>
+                  </div>
+                </router-link>
+                <div
+                  class="column justify-center q-mr-xl"
+                  style="
+                    font-size: 0.62rem;
+                    font-family: sans-serif;
+                    font-stretch: condensed;
+                  "
+                >
                 </div>
-              </router-link>
-              <div
-                class="column justify-center q-mr-xl"
-                style="
-                  font-size: 0.62rem;
-                  font-family: sans-serif;
-                  font-stretch: condensed;
-                "
-              >
               </div>
             </div>
-          </div>
 
-        </nav>
-        <div id="site-right-controls" class="row items-center justify-end">
-          <div class="quick-links row q-gutter-md">
-            <q-btn
-              v-for="link in quickLinks"
-              :key="link.title"
-              flat
-              no-caps
-              :label="link.title"
-              @click="link.route.startsWith('#') ? scrollToSection(link.route) : $router.push(link.route)"
-              class="quick-link-btn"
-            />
-          </div>
-          <div class="social-links row q-gutter-md">
-            <q-btn
-              flat
-              round
-              color="primary"
-              icon="fab fa-facebook"
-              type="a"
-              href="https://www.facebook.com/profile.php?id=61556899834852"
-              target="_blank"
-              class="social-btn"
-            />
-            <q-btn
-              flat
-              round
-              color="pink-6"
-              icon="fab fa-instagram"
-              type="a"
-              href="https://www.instagram.com/themodish_era/"
-              target="_blank"
-              class="social-btn"
-            />
-            <q-btn
-              flat
-              round
-              color="light-blue-5"
-              icon="fab fa-twitter"
-              type="a"
-              href="https://twitter.com"
-              target="_blank"
-              class="social-btn"
-            />
-            <q-btn
-              flat
-              round
-              color="blue-9"
-              icon="fab fa-linkedin"
-              type="a"
-              href="https://linkedin.com"
-              target="_blank"
-              class="social-btn"
-            />
+          </nav>
+          <div id="site-right-controls" class="row items-center justify-end">
+            <div class="quick-links row q-gutter-md">
+              <q-btn
+                v-for="link in quickLinks"
+                :key="link.title"
+                flat
+                no-caps
+                :label="link.title"
+                @click="link.route.startsWith('#') ? scrollToSection(link.route) : $router.push(link.route)"
+                class="quick-link-btn"
+                :aria-label="`Navigate to ${link.title}`"
+              />
+            </div>
+            <div class="social-links row q-gutter-md">
+              <q-btn
+                flat
+                round
+                color="primary"
+                icon="fab fa-facebook"
+                type="a"
+                href="https://www.facebook.com/profile.php?id=61556899834852"
+                target="_blank"
+                class="social-btn"
+              />
+              <q-btn
+                flat
+                round
+                color="pink-6"
+                icon="fab fa-instagram"
+                type="a"
+                href="https://www.instagram.com/themodish_era/"
+                target="_blank"
+                class="social-btn"
+              />
+              <q-btn
+                flat
+                round
+                stack
+                color="green-7"
+                icon="fab fa-whatsapp"
+              
+                @click="copyToClipboard"
+                class="social-btn"
+                aria-label="Call us on WhatsApp"
+              >
+                <q-tooltip
+                  anchor="bottom middle"
+                  self="top middle"
+                  :offset="[0, 8]"
+                >
+                  Click to copy: {{ phoneNumber }}
+                </q-tooltip>
+              </q-btn>
+              <!-- <q-btn
+                flat
+                round
+                color="blue-9"
+                icon="fab fa-linkedin"
+                type="a"
+                href="https://linkedin.com"
+                target="_blank"
+                class="social-btn"
+              /> -->
+            </div>
           </div>
         </div>
-      </div>
-    </q-toolbar>
-  </q-header>
+      </q-toolbar>
+    </q-header>
+  </header>
 
 </template>
 

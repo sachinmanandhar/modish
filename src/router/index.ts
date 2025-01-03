@@ -20,10 +20,21 @@ const router = createRouter({
         //   component: () => import("@/views/DashboardView.vue"),
         // },
         {
-          path: "/product/:categoryId",
+          path: "/product",
           name: "product",
           component: () => import("@/views/ProductView.vue"),
         },
+        {
+          path: '/about',
+          name: 'about',
+          component: () => import('@/views/AboutPage.vue')
+        },
+         
+        {
+          path: '/checkout',
+          name: 'checkout',
+          component: () => import('@/views/CheckoutView.vue')
+    }
       ],
     },
     // {
@@ -32,8 +43,17 @@ const router = createRouter({
     //   // this generates a separate chunk (About.[hash].js) for this route
     //   // which is lazy-loaded when the route is visited.
     //   component: () => import("../views/AboutView.vue"),
-    // },
+
   ],
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) {
+      // If there's a saved position (when using browser back/forward buttons)
+      return savedPosition
+    } else {
+      // Scroll to top for all other navigation
+      return { top: 0 }
+    }
+  }
 });
 
 export default router;

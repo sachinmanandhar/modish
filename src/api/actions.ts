@@ -20,5 +20,6 @@ export enum Action {
   Orders="orders",
   FrontContent="front-content",
   CategoryDetail="category-detail",
-  WomensWear="womens-wear"
+  WomensWear="womens-wear",
+  BulkOrder="bulk-order"
 }

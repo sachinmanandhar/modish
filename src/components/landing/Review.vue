@@ -14,16 +14,16 @@
             :ratio="9/16"
             class="review-image"
           >
-            <div class="absolute-bottom text-subtitle2 text-center q-pa-xs">
+            <!-- <div class="absolute-bottom text-subtitle2 text-center q-pa-xs">
               {{ review.customerName }}
-            </div>
+            </div> -->
           </q-img>
         </q-card>
       </div>
     </div>
 
-    <q-dialog v-model="isModalOpen">
-      <q-img :src="currentImage" class="full-screen-image" />
+    <q-dialog v-model="isModalOpen" style="width: 100vw; height: 100vh;overflow: hidden;">
+      <q-img :src="currentImage" style="object-fit: contain;;overflow: hidden;"  />
     </q-dialog>
   </div>
 </template>

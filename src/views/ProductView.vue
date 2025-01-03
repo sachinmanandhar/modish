@@ -4,10 +4,12 @@
     </div>
   <div class="product-list-container">
     <!-- Hero Section -->
-    <div class="hero-section q-pa-xl text-center" v-if="CategoryDetail && CategoryDetail.length > 0">
-      <h1 class="text-h3 text-weight-bold q-mb-md"> {{ CategoryDetail[0].title }}</h1>
+    <div class="hero-section q-pa-xl text-center">
+      <h1 class="text-h3 text-weight-bold q-mb-md">
+        {{ CategoryDetail && CategoryDetail.length > 0 ? CategoryDetail[0].title : title }}
+      </h1>
       <p class="description q-mx-auto">
-        {{ CategoryDetail[0].description }}
+        {{ CategoryDetail && CategoryDetail.length > 0 ? CategoryDetail[0].description : description }}
       </p>
     </div>
 
@@ -20,9 +22,11 @@
 
     <!-- Filter Section -->
     <div class="q-pa-md">
+      <!-- {{ selectedCategory }} -->
       <div class="filter-section q-mb-lg">
         <div class="row q-col-gutter-md justify-center">
           <div class="col-12 col-sm-4 col-md-3 col-lg-2">
+   
             <q-select
               v-model="selectedCategory"
               :options="Categories"
@@ -82,14 +86,24 @@
                 <span class="text-subtitle2 product-title">{{ product.name }}</span>
                 <span class="text-subtitle2">NPR {{ product.price }}</span>
               </div>
-              <q-btn
-                outline
-                color="primary"
-                class="buy-button q-mt-sm"
-                label="Buy Now"
-                size="sm"
-                @click="showOrderDialog(product.id)"
-              />
+              <div class="row q-gutter-sm justify-center q-mt-sm">
+                <q-btn
+                  outline
+                  color="primary"
+                  class="buy-button"
+                  label="Buy Now"
+                  size="sm"
+                  @click="showOrderDialog(product.id)"
+                />
+                <q-btn
+                  outline
+                  color="secondary"
+                  class="cart-button"
+                  label="Add to Cart"
+                  size="sm"
+                  @click="addToCart(product)"
+                />
+              </div>
             </q-card-section>
           </q-card>
         </div>
@@ -144,9 +158,34 @@
     </q-dialog>
 
     <!-- Image Dialog -->
-    <q-dialog v-model="imageDialog">
-      <q-img :src="selectedImage" style="max-width: 90vw; max-height: 90vh;overflow: hidden;" />
+    <q-dialog v-model="imageDialog" style="width: 100vw; height: 100vh;overflow: hidden;">
+      <q-img 
+        :src="selectedImage" 
+        style="object-fit: contain;;overflow: hidden;" 
+      />
     </q-dialog>
+
+    <!-- Floating Checkout Button -->
+    <q-page-sticky position="bottom-right" :offset="[20, 20]">
+      <q-btn
+        fab
+        color="primary"
+        icon="shopping_cart"
+        class="checkout-fab"
+        @click="goToCheckout"
+      >
+        <q-tooltip>Go to Checkout</q-tooltip>
+        <q-badge
+          v-if="generalStore.cartItemCount > 0"
+          color="red"
+          floating
+          class="cart-badge"
+        >
+          {{ generalStore.cartItemCount }}
+        </q-badge>
+      </q-btn>
+    </q-page-sticky>
+
   </div>
 </template>
 
@@ -155,12 +194,16 @@ import { ref, computed, onBeforeMount } from 'vue';
 import { useProductsStore } from '@/stores/products';
 import { useQuasar } from 'quasar';
 import { useRoute } from 'vue-router';
+import { useGeneralStore } from '@/stores/general';
+import { useRouter } from 'vue-router';
 const ProductStore = useProductsStore();
 const $q = useQuasar();
 const $route = useRoute();
+const generalStore = useGeneralStore();
+const router = useRouter();
 
 // Filter and Sort
-const selectedCategory = ref(null);
+const selectedCategory :any= ref(null);
 const searchQuery = ref('');
 const sortBy = ref('name');
 const sortOptions = [
@@ -168,6 +211,10 @@ const sortOptions = [
   { label: 'Price (Low to High)', value: 'price_asc' },
   { label: 'Price (High to Low)', value: 'price_desc' },
 ];
+
+//ref
+const title = ref('The Modish Era')
+const description = ref("Discover an exquisite collection of women's accessories at The Modish Era. From elegant earrings and chic bags to dazzling rings and bracelets, we offer timeless pieces that elevate your style. Perfect for every occasion, our curated items combine quality and affordability, making them ideal for modern fashion enthusiasts in Nepal. Shop now and redefine your wardrobe with The Modish Era!")
 // Computed Properties
 const Categories = computed(() => {
   return [{ label: 'All', value: null }, ...ProductStore.getCategories];
@@ -221,12 +268,8 @@ const orderForm = ref({
 
 const submitOrder = async () => {
   try {
-    // You can add your order submission logic here
-    // For example:
-    // await ProductStore.submitOrder({
-    //   ...orderForm.value,
-    //   productId: selectedProductId.value
-    // });
+    // Your order submission logic here
+    // ...
     
     $q.notify({
       type: 'positive',
@@ -240,6 +283,10 @@ const submitOrder = async () => {
       address: '',
       quantity: 1
     };
+
+    // Navigate using router
+    router.push({ name: 'product', query: { categoryId: '0' } });
+    
   } catch (error) {
     $q.notify({
       type: 'negative',
@@ -259,14 +306,32 @@ const showOrderDialog = (productId: number) => {
   orderDialog.value = true;
 };
 
-onBeforeMount(async () => {
-  const categoryId = $route.params.categoryId
-  await ProductStore.fetchCategoryDetail(categoryId);
-  await ProductStore.fetchProducts(categoryId);
-  await ProductStore.fetchCategories();
+const addToCart = (product: any) => {
+  generalStore.addToCart(product);
+  $q.notify({
+    type: 'positive',
+    message: 'Added to cart successfully!'
+  });
+};
 
-  selectedProductId.value=  categoryId
-  console.log("categoryId",categoryId);
+const goToCheckout = () => {
+  router.push({ name: 'checkout' });
+};
+
+onBeforeMount(async () => {
+  const categoryId = $route.query.categoryId as string;
+  if (categoryId && categoryId !== '0') {
+    await ProductStore.fetchCategoryDetail(categoryId);
+    await ProductStore.fetchProducts(categoryId);
+    await ProductStore.fetchCategories();
+    selectedCategory.value = categoryId;
+  } else {
+    selectedCategory.value = null;
+    await ProductStore.fetchProducts();
+    await ProductStore.fetchCategories();
+  }
+  
+  console.log("categoryId", categoryId);
 });
 </script>
 
@@ -413,6 +478,34 @@ onBeforeMount(async () => {
     background: #ddd;
     flex: 1;
     max-width: 200px;
+  }
+}
+
+.checkout-fab {
+  z-index: 1000;
+  
+  .q-btn__content {
+    position: relative;
+  }
+}
+
+.cart-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  border-radius: 50%;
+  padding: 4px;
+  min-width: 20px;
+  min-height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// Media query for mobile devices
+@media (max-width: 599px) {
+  .checkout-fab {
+    transform: scale(0.9); // Slightly smaller on mobile
   }
 }
 </style>

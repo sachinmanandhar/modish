@@ -24,13 +24,14 @@
       <div class="carousel-caption left">
         <h2 class="text-h2 text-weight-light">{{ content.title }}</h2>
         <div class="subtitle">{{ content.subtitle }}</div>
+        <!-- {{ content }} -->
         <q-btn
           class="q-mt-md"
           color="secondary"
           label="Shop Now"
           padding="sm lg"
           unelevated
-          @click="scrollToSection('shop',content.category)"
+          @click="navigateToProduct(content.category)"
         />
       </div>
     </q-carousel-slide>
@@ -39,7 +40,9 @@
 <script setup lang="ts">
 import { ref,computed ,onBeforeMount} from 'vue';
 import { useProductsStore } from '@/stores/products';
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
 const ProductStore = useProductsStore()
 const ProductContent = computed((): any => {
   return ProductStore.getFrontContent;
@@ -47,13 +50,14 @@ const ProductContent = computed((): any => {
 
 const slide = ref("0");
 
-const scrollToSection = (elementId: string,category:string) => {
-  ProductStore.SelectedCategory = category
-  const element = document.getElementById(elementId);
-  if (element) {
-    element.scrollIntoView({ behavior: 'smooth' });
-  }
+const navigateToProduct = (category: string) => {
+  ProductStore.SelectedCategory = category;
+  router.push({
+    name: 'product',
+    query: { categoryId: category }
+  });
 };
+
 onBeforeMount(async () => {
   await ProductStore.fetchFrontContent()
 })

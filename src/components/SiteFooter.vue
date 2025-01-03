@@ -14,8 +14,17 @@
           <div class="row q-gutter-sm q-mt-md">
             <q-btn round flat icon="fab fa-facebook" href="https://www.facebook.com/profile.php?id=61556899834852" target="_blank" />
             <q-btn round flat icon="fab fa-instagram" href="https://www.instagram.com/themodish_era/" target="_blank" />
-            <q-btn round flat icon="fab fa-twitter" href="#" target="_blank" />
-            <q-btn round flat icon="fab fa-pinterest" href="#" target="_blank" />
+            <q-btn 
+              round 
+              flat 
+              icon="fab fa-whatsapp" 
+              @click="copyToClipboard"
+            >
+              <q-tooltip anchor="bottom middle" self="top middle" :offset="[0, 8]">
+                Click to copy: {{ phoneNumber }}
+              </q-tooltip>
+            </q-btn>
+            <!-- <q-btn round flat icon="fab fa-pinterest" href="#" target="_blank" /> -->
           </div>
         </div>
 
@@ -103,8 +112,11 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue';
+import { useQuasar } from 'quasar';
 
+const $q = useQuasar();
 const email = ref('');
+const phoneNumber = '+9779860913842';
 
 const quickLinks = [
   { title: 'Home', route: '/#home' },
@@ -134,6 +146,26 @@ const scrollToSection = (event: Event, route: string) => {
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
     }
+  }
+};
+
+const copyToClipboard = async (e: Event) => {
+  e.preventDefault();
+  try {
+    await navigator.clipboard.writeText(phoneNumber);
+    $q.notify({
+      message: 'Phone number copied to clipboard!',
+      type: 'positive',
+      position: 'top',
+      timeout: 2000
+    });
+    window.location.href = `tel:${phoneNumber}`;
+  } catch (err) {
+    $q.notify({
+      message: 'Failed to copy number',
+      type: 'negative',
+      position: 'top'
+    });
   }
 };
 </script>
