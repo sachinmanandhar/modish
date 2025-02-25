@@ -13,16 +13,32 @@ const router = createRouter({
           path: "/",
           name: "landing-page",
           component: () => import("@/views/LandingPage.vue"),
+          meta: {
+            title: 'Modish Era - Fashion & Style Store',
+            description: 'Your premier destination for fashion, style, and trendy clothing.',
+            sitelink: true
+          }
         },
+        {
+          path: "/product",
+          name: "product",
+          component: () => import("@/views/ProductView.vue"),
+          meta: {
+            title: 'Shop All Products - Modish Era',
+            description: 'Browse our collection of trendy fashion items.',
+            sitelink: true
+          }
+        },
+
         // {
         //   path: "dashboard",
         //   name: "dashboard",
         //   component: () => import("@/views/DashboardView.vue"),
         // },
         {
-          path: "/product",
-          name: "product",
-          component: () => import("@/views/ProductView.vue"),
+          path: "/product-detail/:productId",
+          name: "product-detail",
+          component: () => import("@/views/ProductDetailPage.vue"),
         },
         {
           path: '/about',
@@ -54,6 +70,21 @@ const router = createRouter({
       return { top: 0 }
     }
   }
+});
+
+// Update page title and meta description
+router.beforeEach((to, from, next) => {
+  // document.title = to.meta?.title ?? 'Modish Era';
+  
+  // Type the meta element correctly
+  let metaDescription = document.querySelector('meta[name="description"]') as HTMLMetaElement;
+  if (!metaDescription) {
+    metaDescription = document.createElement('meta') as HTMLMetaElement;
+    metaDescription.name = 'description';
+    document.head.appendChild(metaDescription);
+  }
+  
+  next();
 });
 
 export default router;

@@ -136,10 +136,59 @@ const copyToClipboard = async (e: Event) => {
   }
 };
 
+const websiteStructuredData = computed(() => ({
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Modish Era", // Replace with your site name
+  "url": "https://modishera.com", // Replace with your domain
+  "potentialAction": [{
+    "@type": "SearchAction",
+    "target": {
+      "@type": "EntryPoint",
+      "urlTemplate": "https://modishera.com/search?q={search_term_string}"
+    },
+    "query-input": "required name=search_term_string"
+  }],
+  "sameAs": [
+    "https://www.facebook.com/profile.php?id=61556899834852", // Add your social media links
+    "https://www.instagram.com/themodish_era/"
+  ]
+}));
+
+const navigationStructuredData = computed(() => ({
+  "@context": "https://schema.org",
+  "@type": "SiteNavigationElement",
+  "name": quickLinks.map(link => link.title),
+  "url": quickLinks.map(link => getFullUrl(link.route))
+}));
+
+// Helper function to get full URLs
+const getFullUrl = (route: string) => {
+  const baseUrl = 'https://modishera.com'; // Replace with your domain
+  return route.startsWith('#') ? `${baseUrl}/${route}` : `${baseUrl}${route}`;
+};
+
 useMeta({
-  title: 'Modish Era - Fashion & Style',
+  title: 'Modish Era - Stylish Gold Plated Jewelry & Women\'s Fashion in Nepal',
   meta: {
-    description: { name: 'description', content: 'Modish Era - Your premier destination for fashion, style, and trendy clothing. Shop the latest collections of contemporary fashion.' }
+    description: { 
+      name: 'description', 
+      content: 'Discover trendy gold plated jewelry, earrings, lockets, bangles, rings, bags and women\'s fashion accessories at Modish Era. Quality fashion delivered across Nepal.' 
+    },
+    keywords: {
+      name: 'keywords',
+      content: 'jewelry, fashion, women\'s wear, accessories, nepal, gold plated jewelry'
+    }
+  },
+  script: {
+    'website-schema': {
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify(websiteStructuredData.value)
+    },
+    'navigation-schema': {
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify(navigationStructuredData.value)
+    }
   }
 })
 </script>
@@ -228,7 +277,9 @@ useMeta({
                 @click="link.route.startsWith('#') ? scrollToSection(link.route) : $router.push(link.route)"
                 class="quick-link-btn"
                 :aria-label="`Navigate to ${link.title}`"
-              />
+              >
+                <link :href="getFullUrl(link.route)" rel="prerender" />
+              </q-btn>
             </div>
             <div class="social-links row q-gutter-md">
               <q-btn

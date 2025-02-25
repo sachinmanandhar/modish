@@ -15,11 +15,12 @@ export enum Action {
 
   Products = "products",
 
-  Categories="categories",
+  Categories = "categories",
 
-  Orders="orders",
-  FrontContent="front-content",
-  CategoryDetail="category-detail",
-  WomensWear="womens-wear",
-  BulkOrder="bulk-order"
+  Orders = "orders",
+  FrontContent = "front-content",
+  CategoryDetail = "category-detail",
+  WomensWear = "womens-wear",
+  BulkOrder = "bulk-order",
+  TopProducts = "top-products",
 }

@@ -22,7 +22,7 @@ onBeforeMount(async () => {
   <RouterView />
   
   <!-- Discount Dialog -->
-  <q-dialog v-model="showDialog">
+  <!-- <q-dialog v-model="showDialog">
     <q-card :style="$q.screen.lt.sm ? 'width: 90vw' : 'width: 50vw'" style="max-width: 100vw;">
       <q-card-section class="row items-center">
         <q-space />
@@ -32,7 +32,7 @@ onBeforeMount(async () => {
         <img src="@/assets/images/discount.jpeg" style="width: 100%;overflow: hidden;" />
       </q-card-section>
     </q-card>
-  </q-dialog>
+  </q-dialog> -->
 </template>
 
 <style>

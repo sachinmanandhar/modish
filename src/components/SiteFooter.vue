@@ -5,7 +5,12 @@
         <!-- Company Info -->
         <div class="col-12 col-sm-6 col-md-3">
           <div class="text-h6 q-mb-md">About Us</div>
-          <img src="@/assets/images/modish.jpg" style="height: 100px; margin-bottom: 16px" alt="Logo" />
+          <img 
+            src="@/assets/images/modish.jpg" 
+            alt="Logo" 
+            style="height: 100px; width: auto; margin-bottom: 16px"
+            loading="lazy"
+          />
           <p class="text-body2">
             Your trusted fashion destination. We provide quality clothing and accessories
             for the modern woman.
@@ -93,7 +98,7 @@
       <!-- Bottom Bar -->
       <div class="row justify-between items-center q-mt-xl footer-bottom">
         <div class="text-caption">
-          © {{ new Date().getFullYear() }} Your Store. All rights reserved.
+          © {{ new Date().getFullYear() }} Modish Era. All rights reserved.
         </div>
         <div class="row q-gutter-sm">
           <router-link 

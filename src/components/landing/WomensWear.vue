@@ -2,16 +2,24 @@
   <div class="womens-wear q-mt-md" v-if="items.length > 0">
     <h4 class="title text-bold">Women's Wear</h4>
     <div class="card-container flex justify-around">
-      <div 
-        class="card" 
+      <router-link 
         v-for="item in items" 
         :key="item.name"
-        @click="navigateToProduct(item.category)"
-        style="cursor: pointer"
+        :to="{ name: 'product', query: { categoryId: item.category }}"
+        class="card"
       >
-        <img :src="item.image" :alt="item.name" class="card-image" />
-        <div class="card-title">{{ item.category_name }}</div>
-      </div>
+        <div class="card-inner">
+          <img 
+            :src="item.image" 
+            :alt="item.name" 
+            class="card-image" 
+            loading="lazy"
+            width="220"
+            height="220"
+          />
+        </div>
+        <div class="category-name">{{ item.category_name }}</div>
+      </router-link>
     </div>
   </div>
 </template>
@@ -19,17 +27,8 @@
 <script lang="ts" setup>
 import { ref, computed, onBeforeMount } from 'vue';
 import ProductsAPI from '@/api/products';
-import { useRouter } from 'vue-router';
 
-const router = useRouter();
 const items :any = ref([]);
-
-const navigateToProduct = (categoryId: string) => {
-  router.push({
-    name: 'product',
-    query: { categoryId }
-  });
-};
 
 onBeforeMount(async () => {
   const data = await ProductsAPI.getWomensWear();
@@ -57,6 +56,18 @@ onBeforeMount(async () => {
 }
 
 .card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 220px;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+  text-decoration: none;
+}
+
+.card-inner {
   background-color: #e0b9e6;
   border-radius: 50%;
   width: 220px;
@@ -67,7 +78,7 @@ onBeforeMount(async () => {
   transition: transform 0.3s;
 }
 
-.card:hover {
+.card:hover .card-inner {
   transform: scale(1.05);
 }
 
@@ -78,30 +89,20 @@ onBeforeMount(async () => {
   border-radius: 50%;
 }
 
-.card-title {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: rgba(224, 185, 230, 0.7);
-  color: white;
-  font-weight: bold;
-  font-size: 24px;
-  opacity: 0;
-  transition: opacity 0.3s;
-  border-radius: 50%;
-}
-
-.card:hover .card-title {
-  opacity: 1;
+.category-name {
+  font-family: 'Playfair Display', serif;
+  color: #333;
+  font-size: 18px;
+  font-weight: 500;
+  text-align: center;
 }
 
 @media (max-width: 1024px) {
   .card {
+    width: 180px;
+  }
+
+  .card-inner {
     width: 180px;
     height: 180px;
   }
@@ -110,15 +111,14 @@ onBeforeMount(async () => {
 @media (max-width: 600px) {
   .card {
     width: 150px;
+  }
+
+  .card-inner {
+    width: 150px;
     height: 150px;
   }
 
-  .card-image {
-    width: 90px;
-    height: 90px;
-  }
-
-  .card-title {
+  .category-name {
     font-size: 16px;
   }
 }

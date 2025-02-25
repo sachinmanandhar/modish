@@ -7,46 +7,52 @@ export const useProductsStore = defineStore("products", {
       Categories: [],
       FrontContent: [],
       SelectedCategory: null as any,
-      CategoryDetail: [] as any
+      CategoryDetail: [] as any,
+      TopProducts: [] as any,
     };
   },
-  getters:{
+  getters: {
+    getTopProducts: (state) => {
+      return state.TopProducts;
+    },
     getProducts: (state) => {
-        return state.Products;
-      },
-      getCategories: (state) => {
-        return state.Categories;
-        },
-      getFrontContent: (state) => {
-        return state.FrontContent;
-      },
-      getSelectedCategory: (state) => {
-        return state.SelectedCategory;
-        },
-      getCategoryDetail: (state) => {
-        return state.CategoryDetail;
-      },
+      return state.Products;
+    },
+    getCategories: (state) => {
+      return state.Categories;
+    },
+    getFrontContent: (state) => {
+      return state.FrontContent;
+    },
+    getSelectedCategory: (state) => {
+      return state.SelectedCategory;
+    },
+    getCategoryDetail: (state) => {
+      return state.CategoryDetail;
+    },
   },
-  actions:{
-    async fetchProducts(category:any=null){
-     
-    
-    console.log("fetching products")
+  actions: {
+    async fetchProducts(category: any = null) {
+      console.log("fetching products");
       const response = await ProductsAPI.getProducts(category);
       console.log(response);
       this.Products = response;
     },
-    async fetchCategories(){
+    async fetchCategories() {
       const response = await ProductsAPI.getCategories();
       this.Categories = response;
     },
-    async fetchFrontContent(){
+    async fetchFrontContent() {
       const response = await ProductsAPI.getFrontContent();
       this.FrontContent = response;
     },
-    async fetchCategoryDetail(categoryId:any){
+    async fetchCategoryDetail(categoryId: any) {
       const response = await ProductsAPI.getCategoryDetail(categoryId);
       this.CategoryDetail = response;
-    }
-  }
+    },
+    async fetchTopProduct() {
+      const response = await ProductsAPI.fetchTopProduct();
+      this.TopProducts = response;
+    },
+  },
 });

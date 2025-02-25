@@ -1,15 +1,21 @@
 <template>
-    <div class="">
-        
-    </div>
+  <div class=""></div>
   <div class="product-list-container">
     <!-- Hero Section -->
     <div class="hero-section q-pa-xl text-center">
       <h1 class="text-h3 text-weight-bold q-mb-md">
-        {{ CategoryDetail && CategoryDetail.length > 0 ? CategoryDetail[0].title : title }}
+        {{
+          CategoryDetail && CategoryDetail.length > 0
+            ? CategoryDetail[0].title
+            : title
+        }}
       </h1>
       <p class="description q-mx-auto">
-        {{ CategoryDetail && CategoryDetail.length > 0 ? CategoryDetail[0].description : description }}
+        {{
+          CategoryDetail && CategoryDetail.length > 0
+            ? CategoryDetail[0].description
+            : description
+        }}
       </p>
     </div>
 
@@ -26,7 +32,6 @@
       <div class="filter-section q-mb-lg">
         <div class="row q-col-gutter-md justify-center">
           <div class="col-12 col-sm-4 col-md-3 col-lg-2">
-   
             <q-select
               v-model="selectedCategory"
               :options="Categories"
@@ -78,12 +83,17 @@
                 :src="product.image"
                 :ratio="1"
                 class="product-image"
-                @click="showImageDialog(product.image)"
+                @click="goToProductDetail(product.id)"
               />
             </div>
             <q-card-section class="q-pa-sm text-center">
               <div class="product-info">
-                <span class="text-subtitle2 product-title">{{ product.name }}</span>
+                <span
+                  class="text-subtitle2 product-title cursor-pointer"
+                  @click="goToProductDetail(product.id)"
+                >
+                  {{ product.name }}
+                </span>
                 <span class="text-subtitle2">NPR {{ product.price }}</span>
               </div>
               <div class="row q-gutter-sm justify-center q-mt-sm">
@@ -93,7 +103,7 @@
                   class="buy-button"
                   label="Buy Now"
                   size="sm"
-                  @click="showOrderDialog(product.id)"
+                  @click="buyNow(product)"
                 />
                 <q-btn
                   outline
@@ -111,7 +121,7 @@
     </div>
 
     <!-- Order Dialog -->
-    <q-dialog v-model="orderDialog">
+    <!-- <q-dialog v-model="orderDialog">
       <q-card style="min-width: 300px; width: 100%; max-width: 400px">
         <q-card-section class="bg-primary text-white">
           <div class="text-h6">Place Order</div>
@@ -155,13 +165,16 @@
           </q-form>
         </q-card-section>
       </q-card>
-    </q-dialog>
+    </q-dialog> -->
 
     <!-- Image Dialog -->
-    <q-dialog v-model="imageDialog" style="width: 100vw; height: 100vh;overflow: hidden;">
-      <q-img 
-        :src="selectedImage" 
-        style="object-fit: contain;;overflow: hidden;" 
+    <q-dialog
+      v-model="imageDialog"
+      style="width: 100vw; height: 100vh; overflow: hidden"
+    >
+      <q-img
+        :src="selectedImage"
+        style="object-fit: contain; overflow: hidden"
       />
     </q-dialog>
 
@@ -185,17 +198,16 @@
         </q-badge>
       </q-btn>
     </q-page-sticky>
-
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onBeforeMount } from 'vue';
-import { useProductsStore } from '@/stores/products';
-import { useQuasar } from 'quasar';
-import { useRoute } from 'vue-router';
-import { useGeneralStore } from '@/stores/general';
-import { useRouter } from 'vue-router';
+import { ref, computed, onBeforeMount } from "vue";
+import { useProductsStore } from "@/stores/products";
+import { useQuasar } from "quasar";
+import { useRoute } from "vue-router";
+import { useGeneralStore } from "@/stores/general";
+import { useRouter } from "vue-router";
 const ProductStore = useProductsStore();
 const $q = useQuasar();
 const $route = useRoute();
@@ -203,28 +215,30 @@ const generalStore = useGeneralStore();
 const router = useRouter();
 
 // Filter and Sort
-const selectedCategory :any= ref(null);
-const searchQuery = ref('');
-const sortBy = ref('name');
+const selectedCategory: any = ref(null);
+const searchQuery = ref("");
+const sortBy = ref("name");
 const sortOptions = [
-  { label: 'Name (A-Z)', value: 'name' },
-  { label: 'Price (Low to High)', value: 'price_asc' },
-  { label: 'Price (High to Low)', value: 'price_desc' },
+  { label: "Name (A-Z)", value: "name" },
+  { label: "Price (Low to High)", value: "price_asc" },
+  { label: "Price (High to Low)", value: "price_desc" },
 ];
 
 //ref
-const title = ref('The Modish Era')
-const description = ref("Discover an exquisite collection of women's accessories at The Modish Era. From elegant earrings and chic bags to dazzling rings and bracelets, we offer timeless pieces that elevate your style. Perfect for every occasion, our curated items combine quality and affordability, making them ideal for modern fashion enthusiasts in Nepal. Shop now and redefine your wardrobe with The Modish Era!")
+const title = ref("The Modish Era");
+const description = ref(
+  "Discover an exquisite collection of women's accessories at The Modish Era. From elegant earrings and chic bags to dazzling rings and bracelets, we offer timeless pieces that elevate your style. Perfect for every occasion, our curated items combine quality and affordability, making them ideal for modern fashion enthusiasts in Nepal. Shop now and redefine your wardrobe with The Modish Era!"
+);
 // Computed Properties
 const Categories = computed(() => {
-  return [{ label: 'All', value: null }, ...ProductStore.getCategories];
+  return [{ label: "All", value: null }, ...ProductStore.getCategories];
 });
 const CategoryDetail = computed((): any => {
   return ProductStore.getCategoryDetail;
 });
 const filteredProducts = computed(() => {
-  let products :any= ProductStore.getProducts;
-//   products = [{"id":3,"name":"bracelet","description":"demo des","price":800,"category":"Jewellery","image":"http://127.0.0.1:8000/media/products/download_2.jpeg"},{"id":2,"name":"bag","description":"demo bag","price":1000,"category":"Bags","image":"http://127.0.0.1:8000/media/products/download_1.jpeg"},{"id":1,"name":"Earrings","description":"earrings","price":200,"category":"Jewellery","image":"http://127.0.0.1:8000/media/products/download.jpeg"},{"id":3,"name":"bracelet","description":"demo des","price":800,"category":"Jewellery","image":"http://127.0.0.1:8000/media/products/download_2.jpeg"},{"id":2,"name":"bag","description":"demo bag","price":1000,"category":"Bags","image":"http://127.0.0.1:8000/media/products/download_1.jpeg"},{"id":1,"name":"Earrings","description":"earrings","price":200,"category":"Jewellery","image":"http://127.0.0.1:8000/media/products/download.jpeg"},{"id":3,"name":"bracelet","description":"demo des","price":800,"category":"Jewellery","image":"http://127.0.0.1:8000/media/products/download_2.jpeg"},{"id":2,"name":"bag","description":"demo bag","price":1000,"category":"Bags","image":"http://127.0.0.1:8000/media/products/download_1.jpeg"},{"id":1,"name":"Earrings","description":"earrings","price":200,"category":"Jewellery","image":"http://127.0.0.1:8000/media/products/download.jpeg"},{"id":3,"name":"bracelet","description":"demo des","price":800,"category":"Jewellery","image":"http://127.0.0.1:8000/media/products/download_2.jpeg"},{"id":2,"name":"bag","description":"demo bag","price":1000,"category":"Bags","image":"http://127.0.0.1:8000/media/products/download_1.jpeg"},{"id":1,"name":"Earrings","description":"earrings","price":200,"category":"Jewellery","image":"http://127.0.0.1:8000/media/products/download.jpeg"}]
+  let products: any = ProductStore.getProducts;
+
   // Search filter
   if (searchQuery.value) {
     products = products.filter((product: any) =>
@@ -232,18 +246,14 @@ const filteredProducts = computed(() => {
     );
   }
 
-  // Sort
-  products = [...products].sort((a: any, b: any) => {
-    switch (sortBy.value) {
-      case 'price_asc':
-        return a.price - b.price;
-      case 'price_desc':
-        return b.price - a.price;
-      default:
-        return a.name.localeCompare(b.name);
-    }
-  });
+  // Only sort if user has selected a sorting option other than default
+  if (sortBy.value === "price_asc") {
+    return [...products].sort((a: any, b: any) => a.price - b.price);
+  } else if (sortBy.value === "price_desc") {
+    return [...products].sort((a: any, b: any) => b.price - a.price);
+  }
 
+  // Return products
   return products;
 });
 
@@ -255,42 +265,41 @@ const handleCategoryChange = async () => {
 // Dialog controls and other functionality
 const orderDialog = ref(false);
 const imageDialog = ref(false);
-const selectedImage = ref('');
-const selectedProductId :any= ref(null);
+const selectedImage = ref("");
+const selectedProductId: any = ref(null);
 
 // Form handling
 const orderForm = ref({
-  name: '',
-  phone: '',
-  address: '',
-  quantity: 1
+  name: "",
+  phone: "",
+  address: "",
+  quantity: 1,
 });
 
 const submitOrder = async () => {
   try {
     // Your order submission logic here
     // ...
-    
+
     $q.notify({
-      type: 'positive',
-      message: 'Order placed successfully!'
+      type: "positive",
+      message: "Order placed successfully!",
     });
-    
+
     orderDialog.value = false;
     orderForm.value = {
-      name: '',
-      phone: '',
-      address: '',
-      quantity: 1
+      name: "",
+      phone: "",
+      address: "",
+      quantity: 1,
     };
 
     // Navigate using router
-    router.push({ name: 'product', query: { categoryId: '0' } });
-    
+    router.push({ name: "product", query: { categoryId: "0" } });
   } catch (error) {
     $q.notify({
-      type: 'negative',
-      message: 'Failed to place order. Please try again.'
+      type: "negative",
+      message: "Failed to place order. Please try again.",
     });
   }
 };
@@ -309,18 +318,30 @@ const showOrderDialog = (productId: number) => {
 const addToCart = (product: any) => {
   generalStore.addToCart(product);
   $q.notify({
-    type: 'positive',
-    message: 'Added to cart successfully!'
+    type: "positive",
+    message: "Added to cart successfully!",
   });
 };
 
 const goToCheckout = () => {
-  router.push({ name: 'checkout' });
+  router.push({ name: "checkout" });
+};
+
+const buyNow = (product: any) => {
+  addToCart(product);
+  router.push({ name: "checkout" });
+};
+
+const goToProductDetail = (productId: number) => {
+  router.push({
+    name: "product-detail",
+    params: { productId: productId.toString() },
+  });
 };
 
 onBeforeMount(async () => {
   const categoryId = $route.query.categoryId as string;
-  if (categoryId && categoryId !== '0') {
+  if (categoryId && categoryId !== "0") {
     await ProductStore.fetchCategoryDetail(categoryId);
     await ProductStore.fetchProducts(categoryId);
     await ProductStore.fetchCategories();
@@ -330,7 +351,7 @@ onBeforeMount(async () => {
     await ProductStore.fetchProducts();
     await ProductStore.fetchCategories();
   }
-  
+
   console.log("categoryId", categoryId);
 });
 </script>
@@ -340,16 +361,16 @@ onBeforeMount(async () => {
   background: linear-gradient(to right, #f3e7e9, #e3eeff);
   padding: 4rem 2rem !important;
   margin-bottom: 2rem;
-  
+
   h1 {
-    font-family: 'Playfair Display', serif;
+    font-family: "Playfair Display", serif;
     color: #2c3e50;
     margin-bottom: 1.5rem;
     position: relative;
     display: inline-block;
-    
+
     &::after {
-      content: '';
+      content: "";
       position: absolute;
       bottom: -10px;
       left: 50%;
@@ -390,8 +411,8 @@ onBeforeMount(async () => {
 
   &:hover {
     border-color: transparent;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-    
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+
     .product-image {
       transform: scale(1.05);
     }
@@ -400,7 +421,7 @@ onBeforeMount(async () => {
   .image-container {
     position: relative;
     overflow: hidden;
-    
+
     .product-image {
       transition: transform 0.3s ease;
       height: 300px;
@@ -433,34 +454,34 @@ onBeforeMount(async () => {
 @media (max-width: 599px) {
   .hero-section {
     padding: 2rem 1rem !important;
-    
+
     h1 {
       font-size: 2rem;
     }
-    
+
     .description {
       font-size: 1rem;
       line-height: 1.6;
     }
   }
-  
+
   .filter-section {
     padding: 0.75rem;
   }
-  
+
   .product-card {
     max-width: 100%;
-    
+
     .image-container {
       .product-image {
         height: 250px;
       }
     }
-    
+
     .product-title {
       font-size: 0.95rem;
     }
-    
+
     .product-price {
       font-size: 1rem;
     }
@@ -472,7 +493,7 @@ onBeforeMount(async () => {
   align-items: center;
   justify-content: center;
   margin: 2rem 0;
-  
+
   .line {
     height: 1px;
     background: #ddd;
@@ -483,7 +504,7 @@ onBeforeMount(async () => {
 
 .checkout-fab {
   z-index: 1000;
-  
+
   .q-btn__content {
     position: relative;
   }
