@@ -5,7 +5,28 @@
       <!-- Product Image Section -->
       <div class="product-image-container">
         <div class="product-image cursor-pointer">
-          <q-img :src="product.image" :alt="product.title" @click="showImageDialog(product.image)" style="max-height: 80vh;" />
+          <q-img
+            :src="selectedVariantImage"
+            :alt="product.title"
+            @click="showImageDialog(selectedVariantImage)"
+            style="max-height: 60vh"
+          />
+        </div>
+
+        <!-- Product Variants Selection -->
+        <div
+          v-if="product.products?.length > 0"
+          class="product-variants-list q-mt-md"
+        >
+          <div
+            v-for="variant in product.products"
+            :key="variant.id"
+            class="variant-thumb-container"
+            :class="{ selected: selectedVariantId === variant.id }"
+            @click="selectVariant(variant)"
+          >
+            <q-img :src="variant.image" :ratio="1" class="variant-thumb" />
+          </div>
         </div>
       </div>
 
@@ -24,29 +45,36 @@
 
         <h1 class="product-title">{{ product.name }}</h1>
         <p class="price">NPR {{ formatPrice(product.price) }}</p>
-        
+
         <div class="description">
           <h6>Description</h6>
           <p>{{ product.description }}</p>
         </div>
 
         <div class="actions q-mb-sm">
-          <q-btn  color="primary" size="md" @click="buyNow(product)" outline>
+          <q-btn color="primary" size="md" @click="buyNow(product)" outline>
             Buy Now
           </q-btn>
-          <q-btn color="secondary" @click="addToCart(product)" size="md" outline>
+          <q-btn
+            color="secondary"
+            @click="addToCart(product)"
+            size="md"
+            outline
+          >
             Add to Cart
           </q-btn>
-
         </div>
       </div>
     </div>
 
     <!-- Image Dialog -->
-    <q-dialog v-model="imageDialog" style="width: 100vw; height: 100vh;overflow: hidden;">
-      <q-img 
-        :src="selectedImage" 
-        style="object-fit: contain;overflow: hidden;" 
+    <q-dialog
+      v-model="imageDialog"
+      style="width: 100vw; height: 100vh; overflow: hidden"
+    >
+      <q-img
+        :src="selectedImage"
+        style="object-fit: contain; overflow: hidden"
       />
     </q-dialog>
 
@@ -70,76 +98,96 @@
         </q-badge>
       </q-btn>
     </q-page-sticky>
-    <q-dialog v-model="imageDialog" style="width: 100vw; height: 100vh;overflow: hidden;">
-      <q-img 
-        :src="selectedImage" 
-        style="object-fit: contain;;overflow: hidden;" 
-      />
-    </q-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onBeforeMount } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { useQuasar } from 'quasar'
-import ProductsAPI from '@/api/products'
-import { useGeneralStore } from '@/stores/general'
+import { ref, onBeforeMount, computed } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { useQuasar } from "quasar";
+import ProductsAPI from "@/api/products";
+import { useGeneralStore } from "@/stores/general";
 
-const $q = useQuasar()
-const route = useRoute()
-const router = useRouter()
-const generalStore = useGeneralStore()
+const $q = useQuasar();
+const route = useRoute();
+const router = useRouter();
+const generalStore = useGeneralStore();
 
 // State
-const product :any= ref(null)
+const product: any = ref(null);
 
 // Dialog controls
-const imageDialog = ref(false)
-const selectedImage = ref('')
+const imageDialog = ref(false);
+const selectedImage = ref("");
+
+// Add new refs for variant selection
+const selectedVariantId = ref<number | null>(null);
+const selectedVariantImage = computed(() => {
+  if (!product.value?.products?.length) return product.value?.image;
+
+  const selectedVariant = product.value.products.find(
+    (variant: any) => variant.id === selectedVariantId.value
+  );
+  return selectedVariant?.image || product.value.image;
+});
 
 // Methods
 const formatPrice = (price: number) => {
-  return `${price.toFixed(0)}`
-}
+  return `${price.toFixed(0)}`;
+};
 
 const showImageDialog = (image: string) => {
-  selectedImage.value = image
-  imageDialog.value = true
-}
+  selectedImage.value = image;
+  imageDialog.value = true;
+};
+
+const selectVariant = (variant: any) => {
+  console.log("Selecting variant:", variant.id); // Debug log
+  selectedVariantId.value = variant.id;
+  // router.push({ name: "product-detail", params: { productId: variant.id } });
+};
 
 const addToCart = (product: any) => {
-  generalStore.addToCart(product)
+  const productWithVariant = {
+    ...product,
+    selectedVariantId: selectedVariantId.value,
+    selectedImage: selectedVariantImage.value,
+  };
+  generalStore.addToCart(productWithVariant);
   $q.notify({
-    type: 'positive',
-    message: 'Added to cart successfully!'
-  })
-}
+    type: "positive",
+    message: "Added to cart successfully!",
+  });
+};
 
 const buyNow = (product: any) => {
-  addToCart(product)
-  router.push({ name: 'checkout' })
-}
+  addToCart(product);
+  router.push({ name: "checkout" });
+};
 
 const goToCheckout = () => {
-  router.push({ name: 'checkout' })
-}
+  router.push({ name: "checkout" });
+};
 
 // Lifecycle hooks
 onBeforeMount(async () => {
-  console.log("product",route.params.productId)
+  console.log("product", route.params.productId);
   try {
-    const productId = route.params.productId
-    const response = await ProductsAPI.retrieveSingleProduct(productId)
-    product.value = response
+    const productId = route.params.productId;
+    const response = await ProductsAPI.retrieveSingleProduct(productId);
+    product.value = response;
+    // Set initial selected variant
+    if (product.value?.products?.length > 0) {
+      selectedVariantId.value = product.value.products[0].id;
+    }
   } catch (error) {
-    console.error('Error fetching product:', error)
+    console.error("Error fetching product:", error);
     $q.notify({
-      type: 'negative',
-      message: 'Failed to load product details'
-    })
+      type: "negative",
+      message: "Failed to load product details",
+    });
   }
-})
+});
 </script>
 
 <style lang="scss" scoped>
@@ -166,13 +214,14 @@ onBeforeMount(async () => {
   border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  max-height: 500px;
 }
 
 .product-image img {
   width: 100%;
-  max-height: 80vh;
   height: auto;
   object-fit: contain;
+  max-height: 500px;
 }
 
 .product-info {
@@ -260,17 +309,25 @@ onBeforeMount(async () => {
   .product-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .product-image-container {
     position: static;
   }
-  
+
   .product-title {
     font-size: 2rem;
   }
-  
+
   .price {
     font-size: 1.5rem;
+  }
+
+  .product-image {
+    max-height: 400px;
+  }
+
+  .product-image img {
+    max-height: 400px;
   }
 }
 
@@ -292,5 +349,48 @@ onBeforeMount(async () => {
 
 .category-value {
   color: #2c5282;
+}
+
+.product-variants-list {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem 0;
+  overflow-x: auto;
+}
+
+.variant-thumb-container {
+  width: 80px;
+  height: 80px;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+
+  &.selected {
+    border-color: var(--q-primary);
+  }
+}
+
+.variant-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .variant-thumb-container {
+    width: 60px;
+    height: 60px;
+  }
+
+  .product-variants-list {
+    gap: 0.5rem;
+  }
 }
 </style>

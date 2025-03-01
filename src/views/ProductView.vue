@@ -80,12 +80,34 @@
           <q-card flat bordered class="product-card">
             <div class="image-container">
               <q-img
-                :src="product.image"
+                :src="selectedProduct(product)?.image"
                 :ratio="1"
                 class="product-image"
                 @click="goToProductDetail(product.id)"
               />
             </div>
+
+            <!-- Add Product images selection -->
+            <div class="product-images-list">
+              <div
+                v-for="variant in product.products"
+                :key="variant.id"
+                class="product-thumb-container"
+                :class="{
+                  selected: selectedProductIds[product.id] === variant.id,
+                }"
+                @click="selectProduct(product.id, variant.id)"
+              >
+                <q-img
+                  :src="variant.image"
+                  :ratio="1"
+                  class="product-thumb"
+                  width="50"
+                  height="50"
+                />
+              </div>
+            </div>
+
             <q-card-section class="q-pa-sm text-center">
               <div class="product-info">
                 <span
@@ -103,7 +125,7 @@
                   class="buy-button"
                   label="Buy Now"
                   size="sm"
-                  @click="buyNow(product)"
+                  @click="buyNow(product, selectedProduct(product)?.id)"
                 />
                 <q-btn
                   outline
@@ -111,7 +133,7 @@
                   class="cart-button"
                   label="Add to Cart"
                   size="sm"
-                  @click="addToCart(product)"
+                  @click="addToCart(product, selectedProduct(product)?.id)"
                 />
               </div>
             </q-card-section>
@@ -315,20 +337,51 @@ const showOrderDialog = (productId: number) => {
   orderDialog.value = true;
 };
 
-const addToCart = (product: any) => {
-  generalStore.addToCart(product);
-  $q.notify({
-    type: "positive",
-    message: "Added to cart successfully!",
-  });
+const selectedProductIds = ref({});
+
+const selectProduct = (itemId: number, productId: number) => {
+  selectedProductIds.value[itemId] = productId;
 };
 
-const goToCheckout = () => {
+const initializeDefaultSelection = (item: any) => {
+  if (!selectedProductIds.value[item.id] && item.products.length > 0) {
+    selectedProductIds.value[item.id] = item.products[0].id;
+  }
+};
+
+const selectedProduct = (item: any) => {
+  initializeDefaultSelection(item);
+  const selectedId = selectedProductIds.value[item.id];
+  return (
+    item.products.find((p: any) => p.id === selectedId) || item.products[0]
+  );
+};
+
+const addToCart = (item: any, productId: number) => {
+  const selectedVariant = item.products.find((p: any) => p.id === productId);
+  if (selectedVariant) {
+    const cartItem = {
+      id: selectedVariant.id,
+      name: item.name,
+      price: item.price,
+      quantity: 1,
+      image: selectedVariant.image,
+      parentId: item.id,
+    };
+    generalStore.addToCart(cartItem);
+    $q.notify({
+      type: "positive",
+      message: "Added to cart successfully!",
+    });
+  }
+};
+
+const buyNow = (item: any, productId: number) => {
+  addToCart(item, productId);
   router.push({ name: "checkout" });
 };
 
-const buyNow = (product: any) => {
-  addToCart(product);
+const goToCheckout = () => {
   router.push({ name: "checkout" });
 };
 
@@ -527,6 +580,45 @@ onBeforeMount(async () => {
 @media (max-width: 599px) {
   .checkout-fab {
     transform: scale(0.9); // Slightly smaller on mobile
+  }
+}
+
+.product-images-list {
+  display: flex;
+  gap: 8px;
+  padding: 10px;
+  justify-content: center;
+  overflow-x: auto;
+}
+
+.product-thumb-container {
+  width: 50px;
+  height: 50px;
+  border: 2px solid transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+
+  &.selected {
+    border-color: #1976d2;
+  }
+}
+
+.product-thumb {
+  border-radius: 2px;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+@media (max-width: 600px) {
+  .product-thumb-container {
+    width: 40px;
+    height: 40px;
   }
 }
 </style>

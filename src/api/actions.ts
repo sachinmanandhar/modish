@@ -13,7 +13,7 @@ export enum Action {
 
   district = "api/district",
 
-  Products = "products",
+  Products = "product-groups",
 
   Categories = "categories",
 

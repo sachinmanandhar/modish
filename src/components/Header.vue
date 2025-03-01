@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useQuasar } from "quasar";
-import { useMeta } from 'quasar'
+import { useMeta } from "quasar";
 import {
   fasArrowRightToBracket,
   fasUserPlus,
   fabFacebook,
   fabInstagram,
   fabTwitter,
-  fabLinkedin
+  fabLinkedin,
 } from "@quasar/extras/fontawesome-v6";
 
 import type { UserDetail } from "@/models/User.interface";
@@ -43,19 +43,19 @@ const logout = async (): Promise<void> => {
 
 const sidebarOpen = ref(false);
 
-const toggleSidebar = (_:any) => {
+const toggleSidebar = (_: any) => {
   sidebarOpen.value = !sidebarOpen.value;
   document.body.style.overflow = sidebarOpen.value ? "hidden" : "auto";
 };
 
-const closeSidebar = (_:any) => {
+const closeSidebar = (_: any) => {
   if (sidebarOpen.value) {
     sidebarOpen.value = !sidebarOpen.value;
     document.body.style.overflow = "auto";
   }
 };
 
-const openLoginModal = (_:any) => {
+const openLoginModal = (_: any) => {
   isLoginModalVisible.value = true;
 };
 
@@ -96,42 +96,42 @@ const onSubmit = async (): Promise<void> => {
 };
 
 const scrollToSection = (route: string) => {
-  const elementId = route.split('#')[1];
+  const elementId = route.split("#")[1];
   const element = document.getElementById(elementId);
   if (element) {
-    element.scrollIntoView({ behavior: 'smooth' });
+    element.scrollIntoView({ behavior: "smooth" });
   }
 };
 
 const quickLinks = [
-  { title: 'Home', route: '/' },
-  { title: 'Shop', route: '/product' },
+  { title: "Home", route: "/" },
+  { title: "Shop", route: "/product" },
   // { title: 'Sale', route: '#sale' },
-  { title: 'About Us', route: '/about' },
- 
+  { title: "About Us", route: "/about" },
+
   // { title: 'Contact', route: '/contact' },
-  { title: 'Checkout', route: '/checkout' },
+  { title: "Checkout", route: "/checkout" },
 ];
 
-const phoneNumber = '+9779860913842'; // Store phone number as a constant for reuse
+const phoneNumber = "+9779860913842"; // Store phone number as a constant for reuse
 
 const copyToClipboard = async (e: Event) => {
   e.preventDefault(); // Prevent the default tel: behavior
   try {
     await navigator.clipboard.writeText(phoneNumber);
     $q.notify({
-      message: 'Phone number copied to clipboard!',
-      type: 'positive',
-      position: 'top',
-      timeout: 2000
+      message: "Phone number copied to clipboard!",
+      type: "positive",
+      position: "top",
+      timeout: 2000,
     });
     // Optional: Still trigger the call after copying
     window.location.href = `tel:${phoneNumber}`;
   } catch (err) {
     $q.notify({
-      message: 'Failed to copy number',
-      type: 'negative',
-      position: 'top'
+      message: "Failed to copy number",
+      type: "negative",
+      position: "top",
     });
   }
 };
@@ -139,58 +139,82 @@ const copyToClipboard = async (e: Event) => {
 const websiteStructuredData = computed(() => ({
   "@context": "https://schema.org",
   "@type": "WebSite",
-  "name": "Modish Era", // Replace with your site name
-  "url": "https://modishera.com", // Replace with your domain
-  "potentialAction": [{
-    "@type": "SearchAction",
-    "target": {
-      "@type": "EntryPoint",
-      "urlTemplate": "https://modishera.com/search?q={search_term_string}"
+  name: "Modish Era", // Replace with your site name
+  url: "https://modishera.com", // Replace with your domain
+  potentialAction: [
+    {
+      "@type": "SearchAction",
+      target: {
+        "@type": "EntryPoint",
+        urlTemplate: "https://modishera.com/search?q={search_term_string}",
+      },
+      "query-input": "required name=search_term_string",
     },
-    "query-input": "required name=search_term_string"
-  }],
-  "sameAs": [
+  ],
+  sameAs: [
     "https://www.facebook.com/profile.php?id=61556899834852", // Add your social media links
-    "https://www.instagram.com/themodish_era/"
-  ]
+    "https://www.instagram.com/themodish_era/",
+  ],
 }));
 
 const navigationStructuredData = computed(() => ({
   "@context": "https://schema.org",
   "@type": "SiteNavigationElement",
-  "name": quickLinks.map(link => link.title),
-  "url": quickLinks.map(link => getFullUrl(link.route))
+  name: quickLinks.map((link) => link.title),
+  url: quickLinks.map((link) => getFullUrl(link.route)),
 }));
 
 // Helper function to get full URLs
 const getFullUrl = (route: string) => {
-  const baseUrl = 'https://modishera.com'; // Replace with your domain
-  return route.startsWith('#') ? `${baseUrl}/${route}` : `${baseUrl}${route}`;
+  const baseUrl = "https://modishera.com"; // Replace with your domain
+  return route.startsWith("#") ? `${baseUrl}/${route}` : `${baseUrl}${route}`;
 };
 
 useMeta({
-  title: 'Modish Era - Stylish Gold Plated Jewelry & Women\'s Fashion in Nepal',
+  title: "Modish Era - Stylish Gold Plated Jewelry & Women's Fashion in Nepal",
   meta: {
-    description: { 
-      name: 'description', 
-      content: 'Discover trendy gold plated jewelry, earrings, lockets, bangles, rings, bags and women\'s fashion accessories at Modish Era. Quality fashion delivered across Nepal.' 
+    description: {
+      name: "description",
+      content:
+        "Discover trendy gold plated jewelry, earrings, lockets, bangles, rings, bags and women's fashion accessories at Modish Era. Quality fashion delivered across Nepal.",
     },
     keywords: {
-      name: 'keywords',
-      content: 'jewelry, fashion, women\'s wear, accessories, nepal, gold plated jewelry'
-    }
+      name: "keywords",
+      content:
+        "jewelry, fashion, women's wear, accessories, nepal, gold plated jewelry",
+    },
   },
   script: {
-    'website-schema': {
-      type: 'application/ld+json',
-      innerHTML: JSON.stringify(websiteStructuredData.value)
+    "website-schema": {
+      type: "application/ld+json",
+      innerHTML: JSON.stringify(websiteStructuredData.value),
     },
-    'navigation-schema': {
-      type: 'application/ld+json',
-      innerHTML: JSON.stringify(navigationStructuredData.value)
-    }
+    "navigation-schema": {
+      type: "application/ld+json",
+      innerHTML: JSON.stringify(navigationStructuredData.value),
+    },
+  },
+});
+
+// Add these new refs
+const showWelcome = ref(true);
+const displayText = ref("");
+const fullText = "Welcome to The Modish Era";
+
+const typeWriter = async (text: string, speed = 50) => {
+  for (let i = 0; i <= text.length; i++) {
+    displayText.value = text.substring(0, i);
+    await new Promise((resolve) => setTimeout(resolve, speed));
   }
-})
+};
+
+onMounted(async () => {
+  await typeWriter(fullText);
+  // Hide after 4 seconds
+  setTimeout(() => {
+    showWelcome.value = false;
+  }, 4000);
+});
 </script>
 
 <template>
@@ -218,15 +242,17 @@ useMeta({
           <div class="row">
             <router-link to="/" class="site-logo row q-mr-xs">
               <img
-                style="height: 5.2rem"
+                style="height: 5.2rem; width: auto"
+                width="83"
+                height="83"
                 src="@/assets/images/modish.png"
                 alt="Modish Era Logo - Fashion & Style Store"
+                loading="eager"
               />
               <div class="site-title column justify-center q-ml-sm q-mr-md">
                 <h1 class="text-h4 text-weight-bold">Modish</h1>
                 <h2 class="text-subtitle1">Era</h2>
               </div>
-
             </router-link>
           </div>
         </q-toolbar-title>
@@ -245,8 +271,12 @@ useMeta({
               <div class="row">
                 <router-link to="/" class="site-logo row q-mr-xs">
                   <img
-                    style="height: 5.5rem"
+                    style="height: 5.5rem; width: auto"
+                    width="88"
+                    height="88"
                     src="@/assets/images/modish.png"
+                    alt="Modish Era Logo - Fashion & Style Store"
+                    loading="eager"
                   />
                   <div class="site-title column justify-center q-ml-sm">
                     <h1 class="text-h4 text-weight-bold">Modish</h1>
@@ -260,11 +290,9 @@ useMeta({
                     font-family: sans-serif;
                     font-stretch: condensed;
                   "
-                >
-                </div>
+                ></div>
               </div>
             </div>
-
           </nav>
           <div id="site-right-controls" class="row items-center justify-end">
             <div class="quick-links row q-gutter-md">
@@ -274,7 +302,11 @@ useMeta({
                 flat
                 no-caps
                 :label="link.title"
-                @click="link.route.startsWith('#') ? scrollToSection(link.route) : $router.push(link.route)"
+                @click="
+                  link.route.startsWith('#')
+                    ? scrollToSection(link.route)
+                    : $router.push(link.route)
+                "
                 class="quick-link-btn"
                 :aria-label="`Navigate to ${link.title}`"
               >
@@ -308,7 +340,6 @@ useMeta({
                 stack
                 color="green-7"
                 icon="fab fa-whatsapp"
-              
                 @click="copyToClipboard"
                 class="social-btn"
                 aria-label="Call us on WhatsApp"
@@ -335,9 +366,14 @@ useMeta({
           </div>
         </div>
       </q-toolbar>
+
+      <!-- Welcome Message -->
+      <div v-if="showWelcome" class="welcome-message text-center">
+        <span class="typewriter">{{ displayText }}</span>
+        <q-icon name="sentiment_very_satisfied" size="sm" class="q-ml-sm" />
+      </div>
     </q-header>
   </header>
-
 </template>
 
 <style>
@@ -380,7 +416,7 @@ useMeta({
   #site-nav .hamburger-menu {
     align-self: flex-start;
     margin: 1rem 0;
-  } 
+  }
   #site-controls {
     display: none;
     position: fixed;
@@ -443,12 +479,12 @@ useMeta({
 }
 
 .site-title {
-  font-family: 'Dancing Script', cursive;
+  font-family: "Dancing Script", cursive;
   line-height: 1;
 }
 
 .site-title .text-h4 {
-  color: #e0b9e6;
+  color: #8f0005;
   margin: 0;
   font-size: 2.8rem;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
@@ -461,7 +497,7 @@ useMeta({
   font-size: 1.5rem;
   letter-spacing: 6px;
   text-transform: uppercase;
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
 }
 
 .q-toolbar {
@@ -490,9 +526,40 @@ useMeta({
     margin-right: 0;
     margin-bottom: 1rem;
   }
-  
+
   #site-right-controls {
     flex-direction: column;
   }
+}
+
+.welcome-message {
+  background: linear-gradient(to right, #8f0005, #666);
+  color: white;
+  padding: 0.5rem;
+  font-size: 1rem;
+  animation: fadeOut 0.5s ease-in-out 3.5s forwards;
+}
+
+.typewriter {
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* Add these styles to maintain aspect ratio and prevent layout shift */
+img {
+  aspect-ratio: attr(width) / attr(height);
+}
+
+.site-logo img {
+  aspect-ratio: 1 / 1; /* Since the logo appears to be square */
 }
 </style>

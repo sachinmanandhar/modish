@@ -1,7 +1,7 @@
 <template>
   <div class="checkout-container q-pa-md">
     <h2 class="text-h4 q-mb-lg">Checkout</h2>
-<!-- {{ cart }} -->
+    <!-- {{ cart }} -->
     <!-- Cart Items -->
     <div class="cart-items q-mb-xl">
       <div v-for="item in cart" :key="item.id" class="cart-item q-mb-md">
@@ -71,7 +71,7 @@
             :rules="[(val:any) => !!val || 'Location is required']"
             outlined
           /> -->
-          
+
           <div class="row justify-end q-mt-lg">
             <q-btn
               type="submit"
@@ -91,20 +91,12 @@
               <span>Subtotal:</span>
               <span>NPR {{ cartTotal }}</span>
             </div>
-            <div class="row justify-between q-mt-sm text-positive">
-              <span>Special Offer Discount (10%):</span>
-              <span>- NPR {{ discount }}</span>
-            </div>
-            <!-- <div class="row justify-between q-mt-sm">
-              <span>Delivery:</span>
-              <span>NPR {{ deliveryCharge }}</span>
-            </div> -->
             <q-separator class="q-my-md" />
             <div class="row justify-between text-weight-bold">
               <span>Total:</span>
               <span>NPR {{ finalTotal }}</span>
             </div>
-            
+
             <div class="text-caption q-mt-md">
               <p class="text-bold">Delivery Charges:</p>
               <ul class="q-mt-sm">
@@ -121,11 +113,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import { useGeneralStore } from '@/stores/general';
-import { useQuasar } from 'quasar';
-import { useRouter } from 'vue-router';
-import GENERALAPI from '@/api/general';
+import { ref, computed } from "vue";
+import { useGeneralStore } from "@/stores/general";
+import { useQuasar } from "quasar";
+import { useRouter } from "vue-router";
+import GENERALAPI from "@/api/general";
 const generalStore = useGeneralStore();
 const $q = useQuasar();
 const router = useRouter();
@@ -134,40 +126,39 @@ const cartTotal = computed(() => generalStore.cartTotal);
 
 const deliveryCharge = computed(() => {
   switch (orderForm.value.location) {
-    case 'inside_ring_road':
+    case "inside_ring_road":
       return 100;
-    case 'outside_ring_road':
+    case "outside_ring_road":
       return 150;
-    case 'outside_valley':
+    case "outside_valley":
       return 0; // This will be calculated separately
     default:
       return 0;
   }
 });
 
-const discount = computed(() => Math.round(cartTotal.value * 0.1));
-const finalTotal = computed(() => cartTotal.value - discount.value + deliveryCharge.value);
+const finalTotal = computed(() => cartTotal.value + deliveryCharge.value);
 
 const locationOptions = [
   {
-    label: 'Inside Ring Road',
-    value: 'inside_ring_road'
+    label: "Inside Ring Road",
+    value: "inside_ring_road",
   },
   {
-    label: 'Outside Ring Road',
-    value: 'outside_ring_road'
+    label: "Outside Ring Road",
+    value: "outside_ring_road",
   },
   {
-    label: 'Outside Valley',
-    value: 'outside_valley'
-  }
+    label: "Outside Valley",
+    value: "outside_valley",
+  },
 ];
 
 const orderForm = ref({
-  name: '',
-  phone: '',
-  address: '',
-  location: ''
+  name: "",
+  phone: "",
+  address: "",
+  location: "",
 });
 
 const updateQuantity = (productId: number, quantity: number) => {
@@ -181,34 +172,34 @@ const removeFromCart = (productId: number) => {
 const submitOrder = async () => {
   try {
     const transformedData = {
-      products: cart.value.map(item => ({
+      products: cart.value.map((item) => ({
         product: item.id,
-        quantity: item.quantity
+        quantity: item.quantity,
       })),
       phone_number: orderForm.value.phone,
       full_name: orderForm.value.name,
       address: orderForm.value.address,
-      location: orderForm.value.location
+      location: orderForm.value.location,
     };
 
-    await GENERALAPI.postBulkOrder(transformedData).then((res:any)=> {
+    await GENERALAPI.postBulkOrder(transformedData).then((res: any) => {
       $q.notify({
-        type: 'positive',
-        message: 'Order placed successfully!'
-      });   
+        type: "positive",
+        message: "Order placed successfully!",
+      });
       generalStore.clearCart();
       orderForm.value = {
-        name: '',
-        phone: '',
-        address: '',
-        location: ''
-      }; 
-      router.push({ name: 'product', params: { categoryId: '0' }});
+        name: "",
+        phone: "",
+        address: "",
+        location: "",
+      };
+      router.push({ name: "product", params: { categoryId: "0" } });
     });
   } catch (error) {
     $q.notify({
-      type: 'negative',
-      message: 'Failed to place order. Please try again.'
+      type: "negative",
+      message: "Failed to place order. Please try again.",
     });
   }
 };

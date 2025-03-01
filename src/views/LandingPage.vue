@@ -1,6 +1,6 @@
 <template>
   <main class="column">
-    <CarouselComponent id="home" />
+    <!-- <CarouselComponent id="home" /> -->
     <WomensWear id="shop" />
     <ProductSlider id="sale" />
     <AboutUs id="about" />
