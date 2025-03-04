@@ -6,11 +6,27 @@
       <div class="product-image-container">
         <div class="product-image cursor-pointer">
           <q-img
-            :src="selectedVariantImage"
+            :src="
+              selectedVariant?.image_medium_url ||
+              selectedVariant?.image ||
+              product.image
+            "
             :alt="product.title"
-            @click="showImageDialog(selectedVariantImage)"
+            @click="
+              showImageDialog(
+                selectedVariant?.image_medium_url ||
+                  selectedVariant?.image ||
+                  product.image
+              )
+            "
             style="max-height: 60vh"
-          />
+            loading="lazy"
+            :placeholder-src="placeholderImage"
+          >
+            <template v-slot:loading>
+              <div class="image-placeholder" />
+            </template>
+          </q-img>
         </div>
 
         <!-- Product Variants Selection -->
@@ -25,7 +41,17 @@
             :class="{ selected: selectedVariantId === variant.id }"
             @click="selectVariant(variant)"
           >
-            <q-img :src="variant.image" :ratio="1" class="variant-thumb" />
+            <q-img
+              :src="variant.image_thumbnail_url || variant.image"
+              :ratio="1"
+              class="variant-thumb"
+              loading="lazy"
+              :placeholder-src="placeholderImage"
+            >
+              <template v-slot:loading>
+                <div class="image-placeholder" />
+              </template>
+            </q-img>
           </div>
         </div>
       </div>
@@ -75,7 +101,12 @@
       <q-img
         :src="selectedImage"
         style="object-fit: contain; overflow: hidden"
-      />
+        :placeholder-src="placeholderImage"
+      >
+        <template v-slot:loading>
+          <div class="image-placeholder" />
+        </template>
+      </q-img>
     </q-dialog>
 
     <!-- Floating Checkout Button -->
@@ -122,14 +153,17 @@ const selectedImage = ref("");
 
 // Add new refs for variant selection
 const selectedVariantId = ref<number | null>(null);
-const selectedVariantImage = computed(() => {
-  if (!product.value?.products?.length) return product.value?.image;
-
-  const selectedVariant = product.value.products.find(
+const selectedVariant = computed(() => {
+  if (!product.value?.products?.length) return null;
+  return product.value.products.find(
     (variant: any) => variant.id === selectedVariantId.value
   );
-  return selectedVariant?.image || product.value.image;
 });
+
+// Add placeholder image
+const placeholderImage = ref(
+  'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"%3E%3C/svg%3E'
+);
 
 // Methods
 const formatPrice = (price: number) => {
@@ -147,17 +181,23 @@ const selectVariant = (variant: any) => {
   // router.push({ name: "product-detail", params: { productId: variant.id } });
 };
 
-const addToCart = (product: any) => {
-  const productWithVariant = {
-    ...product,
-    selectedVariantId: selectedVariantId.value,
-    selectedImage: selectedVariantImage.value,
-  };
-  generalStore.addToCart(productWithVariant);
-  $q.notify({
-    type: "positive",
-    message: "Added to cart successfully!",
-  });
+const addToCart = (item: any) => {
+  const variantToAdd = selectedVariant.value || item.products[0];
+  if (variantToAdd) {
+    const cartItem = {
+      id: variantToAdd.id,
+      name: item.name,
+      price: item.price,
+      quantity: 1,
+      image: variantToAdd.image_small_url || variantToAdd.image,
+      parentId: item.id,
+    };
+    generalStore.addToCart(cartItem);
+    $q.notify({
+      type: "positive",
+      message: "Added to cart successfully!",
+    });
+  }
 };
 
 const buyNow = (product: any) => {
@@ -188,6 +228,12 @@ onBeforeMount(async () => {
     });
   }
 });
+
+// Update selectedVariantImage computed property
+const selectedVariantImage = computed(() => {
+  if (!selectedVariant.value) return product.value?.image;
+  return selectedVariant.value.image_medium_url || selectedVariant.value.image;
+});
 </script>
 
 <style lang="scss" scoped>
@@ -214,14 +260,14 @@ onBeforeMount(async () => {
   border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  max-height: 500px;
+  max-height: 700px;
 }
 
 .product-image img {
   width: 100%;
   height: auto;
   object-fit: contain;
-  max-height: 500px;
+  max-height: 700px;
 }
 
 .product-info {
@@ -323,11 +369,11 @@ onBeforeMount(async () => {
   }
 
   .product-image {
-    max-height: 400px;
+    max-height: 500px;
   }
 
   .product-image img {
-    max-height: 400px;
+    max-height: 500px;
   }
 }
 

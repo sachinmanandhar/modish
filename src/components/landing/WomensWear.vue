@@ -26,7 +26,7 @@
         >
           <div class="card-inner">
             <q-img
-              :src="item.image"
+              :src="item.image_small_url"
               :alt="item.name"
               class="card-image"
               loading="lazy"
@@ -58,7 +58,7 @@ const items: any = ref([]);
 const breakpoints = {
   // Mobile
   320: {
-    itemsToShow: 1.2,
+    itemsToShow: 1.3,
     snapAlign: "center",
     autoplay: 3000,
     pauseAutoplayOnHover: true,

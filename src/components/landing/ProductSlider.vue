@@ -24,6 +24,7 @@
         :pagination-enabled="true"
         :pagination-padding="4"
         :items-to-show="1"
+        :touch-drag="false"
       >
         <Slide v-if="NewProducts.length === 0">
           <q-card class="product-card">
@@ -39,22 +40,51 @@
             </q-card-section>
           </q-card>
         </Slide>
-        <Slide v-else v-for="item in NewProducts" :key="item.id">
+        <Slide v-else v-for="(item, index) in NewProducts" :key="item.id">
           <q-card class="product-card">
-            <!-- Add aspect ratio container -->
             <div class="image-container">
               <q-img
-                :src="selectedProduct(item)?.image"
+                :src="
+                  selectedProduct(item)?.image_medium_url ||
+                  selectedProduct(item)?.image
+                "
+                :alt="item.name"
+                :title="item.name"
+                fetchpriority="high"
+                loading="eager"
+                v-if="index === 0"
                 :ratio="1"
                 class="product-image cursor-pointer"
                 @click="goToProductDetail(item.id)"
                 width="260"
                 height="300"
-                loading="lazy"
-                placeholder-src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
+                :placeholder-src="placeholderImage"
               >
                 <template v-slot:loading>
-                  <q-skeleton type="rect" class="full-width full-height" />
+                  <div class="image-placeholder" />
+                </template>
+                <div v-if="!item.is_in_stock" class="out-of-stock-badge">
+                  Out of Stock
+                </div>
+              </q-img>
+              <q-img
+                :src="
+                  selectedProduct(item)?.image_medium_url ||
+                  selectedProduct(item)?.image
+                "
+                :alt="item.name"
+                :title="item.name"
+                loading="lazy"
+                v-else
+                :ratio="1"
+                class="product-image cursor-pointer"
+                @click="goToProductDetail(item.id)"
+                width="260"
+                height="300"
+                :placeholder-src="placeholderImage"
+              >
+                <template v-slot:loading>
+                  <div class="image-placeholder" />
                 </template>
                 <div v-if="!item.is_in_stock" class="out-of-stock-badge">
                   Out of Stock
@@ -74,11 +104,15 @@
                 @click="selectProduct(item.id, product.id)"
               >
                 <q-img
-                  :src="product.image"
+                  :src="product.image_thumbnail_url || product.image"
+                  :alt="`${item.name} - Variant ${product.id}`"
+                  :title="`${item.name} - Variant ${product.id}`"
                   :ratio="1"
                   class="product-thumb"
                   width="50"
                   height="50"
+                  loading="lazy"
+                  :placeholder-src="placeholderImage"
                 />
               </div>
             </div>
@@ -161,6 +195,7 @@
         :pagination-enabled="true"
         :pagination-padding="4"
         :items-to-show="1"
+        :touch-drag="false"
       >
         <Slide v-if="ViewedProducts.length === 0">
           <q-card class="product-card">
@@ -176,21 +211,51 @@
             </q-card-section>
           </q-card>
         </Slide>
-        <Slide v-else v-for="item in ViewedProducts" :key="item.id">
+        <Slide v-else v-for="(item, index) in ViewedProducts" :key="item.id">
           <q-card class="product-card">
             <div class="image-container">
               <q-img
-                :src="selectedProduct(item)?.image"
+                :src="
+                  selectedProduct(item)?.image_medium_url ||
+                  selectedProduct(item)?.image
+                "
+                :alt="item.name"
+                :title="item.name"
+                fetchpriority="high"
+                loading="eager"
+                v-if="index === 0"
                 :ratio="1"
                 class="product-image cursor-pointer"
                 @click="goToProductDetail(item.id)"
                 width="260"
                 height="300"
-                loading="lazy"
-                placeholder-src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
+                :placeholder-src="placeholderImage"
               >
                 <template v-slot:loading>
-                  <q-skeleton type="rect" class="full-width full-height" />
+                  <div class="image-placeholder" />
+                </template>
+                <div v-if="!item.is_in_stock" class="out-of-stock-badge">
+                  Out of Stock
+                </div>
+              </q-img>
+              <q-img
+                :src="
+                  selectedProduct(item)?.image_medium_url ||
+                  selectedProduct(item)?.image
+                "
+                :alt="item.name"
+                :title="item.name"
+                loading="lazy"
+                v-else
+                :ratio="1"
+                class="product-image cursor-pointer"
+                @click="goToProductDetail(item.id)"
+                width="260"
+                height="300"
+                :placeholder-src="placeholderImage"
+              >
+                <template v-slot:loading>
+                  <div class="image-placeholder" />
                 </template>
                 <div v-if="!item.is_in_stock" class="out-of-stock-badge">
                   Out of Stock
@@ -198,7 +263,7 @@
               </q-img>
             </div>
 
-            <!-- Add Product images selection -->
+            <!-- Product thumbnails -->
             <div class="product-images-list">
               <div
                 v-for="product in item.products"
@@ -210,11 +275,15 @@
                 @click="selectProduct(item.id, product.id)"
               >
                 <q-img
-                  :src="product.image"
+                  :src="product.image_thumbnail_url || product.image"
+                  :alt="`${item.name} - Variant ${product.id}`"
+                  :title="`${item.name} - Variant ${product.id}`"
                   :ratio="1"
                   class="product-thumb"
                   width="50"
                   height="50"
+                  loading="lazy"
+                  :placeholder-src="placeholderImage"
                 />
               </div>
             </div>
@@ -297,6 +366,7 @@
         :pagination-enabled="true"
         :pagination-padding="4"
         :items-to-show="1"
+        :touch-drag="false"
       >
         <Slide v-if="SoldProducts.length === 0">
           <q-card class="product-card">
@@ -312,21 +382,51 @@
             </q-card-section>
           </q-card>
         </Slide>
-        <Slide v-else v-for="item in SoldProducts" :key="item.id">
+        <Slide v-else v-for="(item, index) in SoldProducts" :key="item.id">
           <q-card class="product-card">
             <div class="image-container">
               <q-img
-                :src="selectedProduct(item)?.image"
+                :src="
+                  selectedProduct(item)?.image_medium_url ||
+                  selectedProduct(item)?.image
+                "
+                :alt="item.name"
+                :title="item.name"
+                fetchpriority="high"
+                loading="eager"
+                v-if="index === 0"
                 :ratio="1"
                 class="product-image cursor-pointer"
                 @click="goToProductDetail(item.id)"
                 width="260"
                 height="300"
-                loading="lazy"
-                placeholder-src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
+                :placeholder-src="placeholderImage"
               >
                 <template v-slot:loading>
-                  <q-skeleton type="rect" class="full-width full-height" />
+                  <div class="image-placeholder" />
+                </template>
+                <div v-if="!item.is_in_stock" class="out-of-stock-badge">
+                  Out of Stock
+                </div>
+              </q-img>
+              <q-img
+                :src="
+                  selectedProduct(item)?.image_medium_url ||
+                  selectedProduct(item)?.image
+                "
+                :alt="item.name"
+                :title="item.name"
+                loading="lazy"
+                v-else
+                :ratio="1"
+                class="product-image cursor-pointer"
+                @click="goToProductDetail(item.id)"
+                width="260"
+                height="300"
+                :placeholder-src="placeholderImage"
+              >
+                <template v-slot:loading>
+                  <div class="image-placeholder" />
                 </template>
                 <div v-if="!item.is_in_stock" class="out-of-stock-badge">
                   Out of Stock
@@ -334,7 +434,7 @@
               </q-img>
             </div>
 
-            <!-- Add Product images selection -->
+            <!-- Product thumbnails -->
             <div class="product-images-list">
               <div
                 v-for="product in item.products"
@@ -346,11 +446,15 @@
                 @click="selectProduct(item.id, product.id)"
               >
                 <q-img
-                  :src="product.image"
+                  :src="product.image_thumbnail_url || product.image"
+                  :alt="`${item.name} - Variant ${product.id}`"
+                  :title="`${item.name} - Variant ${product.id}`"
                   :ratio="1"
                   class="product-thumb"
                   width="50"
                   height="50"
+                  loading="lazy"
+                  :placeholder-src="placeholderImage"
                 />
               </div>
             </div>
@@ -508,7 +612,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onBeforeMount, watch } from "vue";
+import { ref, computed, onBeforeMount, watch, onMounted } from "vue";
 import { Carousel, Slide, Pagination, Navigation } from "vue3-carousel";
 import { useProductsStore } from "@/stores/products";
 import ProductsAPI from "@/api/products";
@@ -556,43 +660,29 @@ const handleCategoryChange = async () => {
   await ProductStore.fetchProducts(selectedCategory.value);
 };
 
+// Add this constant for the placeholder image
+const placeholderImage = ref(
+  'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"%3E%3C/svg%3E'
+);
+
+// Modify breakpoints to reduce initial items shown
 const breakpoints = {
-  // Mobile
   320: {
     itemsToShow: 1,
     snapAlign: "center",
-    itemsToScroll: 1,
-
-    autoplay: 5000,
-    pauseAutoplayOnHover: true,
   },
-  // Tablet
   640: {
     itemsToShow: 2,
     snapAlign: "center",
-    itemsToScroll: 2,
-    autoplay: 5000,
-    pauseAutoplayOnHover: true,
   },
-  // Small Laptop
   1024: {
-    itemsToShow: 4,
+    itemsToShow: 3, // Reduced from 4
     snapAlign: "start",
-    autoplay: 5000,
-    pauseAutoplayOnHover: true,
   },
-  // Large Laptop/Desktop
   1440: {
-    itemsToShow: 5,
+    itemsToShow: 4, // Reduced from 5
     snapAlign: "start",
-    autoplay: 5000,
-    pauseAutoplayOnHover: true,
   },
-  // // Extra Large Screens
-  // 1800: {
-  //   itemsToShow: 5,
-  //   snapAlign: 'start',
-  // },
 };
 
 onBeforeMount(async () => {
@@ -659,7 +749,7 @@ watch(SelectedCategory, async (newValue) => {
   await ProductStore.fetchProducts(selectedCategory.value);
 });
 
-const selectedProductIds = ref({});
+const selectedProductIds: any = ref({});
 
 const selectProduct = (itemId: number, productId: number) => {
   selectedProductIds.value[itemId] = productId;
@@ -676,6 +766,12 @@ const selectedProduct = (item: any) => {
   // Initialize default selection when accessing product
   initializeDefaultSelection(item);
   const selectedId = selectedProductIds.value[item.id];
+
+  // Handle case where products array is empty
+  if (!item.products || item.products.length === 0) {
+    return null;
+  }
+
   return (
     item.products.find((p: any) => p.id === selectedId) || item.products[0]
   );
@@ -685,12 +781,12 @@ const addToCart = (item: any, productId: number) => {
   const selectedVariant = item.products.find((p: any) => p.id === productId);
   if (selectedVariant) {
     const cartItem = {
-      id: selectedVariant.id, // Use the variant's ID
+      id: selectedVariant.id,
       name: item.name,
       price: item.price,
       quantity: 1,
-      image: selectedVariant.image, // Use the variant's image
-      parentId: item.id, // Optional: if you need to reference the parent item
+      image: selectedVariant.image_small_url || selectedVariant.image, // Use optimized image
+      parentId: item.id,
     };
     generalStore.addToCart(cartItem);
     $q.notify({
@@ -713,6 +809,41 @@ const goToProductDetail = (productId: number) => {
     params: { productId: productId },
   });
 };
+
+// Add preloading for the first visible image
+onMounted(() => {
+  if (NewProducts.value.length > 0) {
+    const firstProduct = NewProducts.value[0];
+    const link = document.createElement("link");
+    link.rel = "preload";
+    link.as = "image";
+    link.href =
+      firstProduct.products[0]?.image_medium_url ||
+      firstProduct.products[0]?.image;
+    document.head.appendChild(link);
+  }
+});
+
+// Add intersection observer to load images only when needed
+const setupImageObserver = () => {
+  const imageObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const img = entry.target as HTMLImageElement;
+          if (img.dataset.src) {
+            img.src = img.dataset.src;
+            img.removeAttribute("data-src");
+          }
+          imageObserver.unobserve(img);
+        }
+      });
+    },
+    { rootMargin: "50px" }
+  );
+
+  return imageObserver;
+};
 </script>
 
 <style lang="scss">
@@ -725,6 +856,8 @@ const goToProductDetail = (productId: number) => {
 
 .section-container {
   margin-bottom: 3rem;
+  content-visibility: auto;
+  contain-intrinsic-size: 700px;
 }
 
 .section-title {
@@ -746,6 +879,7 @@ const goToProductDetail = (productId: number) => {
   height: 550px; /* Add fixed height */
   display: flex;
   flex-direction: column;
+  will-change: transform;
 }
 
 .product-card:hover {
@@ -783,6 +917,7 @@ const goToProductDetail = (productId: number) => {
 :deep(.carousel__track) {
   gap: 1.5rem;
   padding: 0.5rem 0;
+  will-change: transform;
 }
 
 :deep(.carousel__prev),
@@ -845,7 +980,9 @@ const goToProductDetail = (productId: number) => {
 
 .product-image {
   width: 100%;
-  height: 100%;
+  height: auto;
+  max-width: 260px;
+  max-height: 300px;
   object-fit: cover;
 }
 
@@ -875,6 +1012,7 @@ const goToProductDetail = (productId: number) => {
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.3s ease;
+  overflow: hidden; // Prevent thumbnail overflow
 }
 
 .product-thumb-container:hover {
@@ -898,5 +1036,32 @@ const goToProductDetail = (productId: number) => {
     width: 40px;
     height: 40px;
   }
+}
+
+// Add optimized placeholder styles
+.image-placeholder {
+  background-color: #f0f0f0;
+  width: 100%;
+  height: 100%;
+}
+
+// Optimize image container
+.image-container {
+  position: relative;
+  width: 260px;
+  height: 300px;
+  background-color: #f0f0f0;
+  overflow: hidden; // Prevent image overflow during loading
+}
+
+// Add content-visibility to improve rendering performance
+.section-container {
+  content-visibility: auto;
+  contain-intrinsic-size: 700px;
+}
+
+// Add will-change for smoother animations
+.carousel__track {
+  will-change: transform;
 }
 </style>

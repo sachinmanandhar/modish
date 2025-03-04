@@ -104,6 +104,10 @@
                 <li>Outside Ring Road: NPR 150</li>
                 <li>Outside Valley: Depends on location</li>
               </ul>
+              <p class="q-mt-sm text-bold">
+                Note: Orders within Kathmandu Valley will be delivered within 24
+                hours.
+              </p>
             </div>
           </q-card-section>
         </q-card>

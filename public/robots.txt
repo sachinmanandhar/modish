@@ -1,0 +1,32 @@
+# Global rules
+User-agent: *
+Allow: /
+Allow: /product
+Allow: /about
+Allow: /faqs
+
+# Prevent crawling of checkout and cart pages
+Disallow: /checkout
+Disallow: /cart
+
+# Prevent crawling of search results and filtered pages
+Disallow: /*?search=
+Disallow: /*?filter=
+Disallow: /*?sort=
+Disallow: /*?page=
+
+# Allow static assets
+Allow: /*.js
+Allow: /*.css
+Allow: /*.png
+Allow: /*.jpg
+Allow: /*.jpeg
+Allow: /*.gif
+Allow: /*.svg
+Allow: /*.webp
+
+# Sitemap location
+Sitemap: https://themodishera.com/sitemap.xml
+
+# Crawl-delay for all bots (optional, in seconds)
+Crawl-delay: 1

@@ -9,7 +9,8 @@
     "test:unit": "vitest --environment jsdom",
     "build-only": "vite build",
     "type-check": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false",
-    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
+    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
+    "generate-sitemap": "node scripts/generate-sitemap.js"
   },
   "dependencies": {
     "@quasar/extras": "^1.14.3",
@@ -19,6 +20,7 @@
     "ol": "^6.15.1",
     "pinia": "^2.0.16",
     "quasar": "^2.7.5",
+    "sitemap": "^8.0.0",
     "swiper": "^11.1.15",
     "vue": "^3.2.37",
     "vue-i18n": "^9.1.10",

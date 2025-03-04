@@ -258,6 +258,21 @@ onMounted(async () => {
         </q-toolbar-title>
 
         <div :data-expanded="sidebarOpen" id="site-controls">
+          <!-- Only show close button in mobile view -->
+          <div class="close-button-container mobile-only">
+            <q-btn
+              flat
+              round
+              color="grey-7"
+              icon="close"
+              @click="closeSidebar"
+              class="close-sidebar-btn"
+              size="md"
+            >
+              <q-tooltip>Close Menu</q-tooltip>
+            </q-btn>
+          </div>
+
           <nav id="site-nav" role="navigation" aria-label="Main navigation">
             <div class="hamburger-menu-container row items-center q-mb-md">
               <q-btn
@@ -294,6 +309,7 @@ onMounted(async () => {
               </div>
             </div>
           </nav>
+
           <div id="site-right-controls" class="row items-center justify-end">
             <div class="quick-links row q-gutter-md">
               <q-btn
@@ -561,5 +577,31 @@ img {
 
 .site-logo img {
   aspect-ratio: 1 / 1; /* Since the logo appears to be square */
+}
+
+.close-button-container {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 2;
+  display: none; /* Hide by default */
+}
+
+.close-sidebar-btn {
+  transition: transform 0.2s ease;
+}
+
+.close-sidebar-btn:hover {
+  transform: rotate(90deg);
+}
+
+@media only screen and (max-width: 1000px) {
+  #site-controls {
+    padding-top: 1rem;
+  }
+
+  .close-button-container {
+    display: block; /* Only show in mobile view */
+  }
 }
 </style>

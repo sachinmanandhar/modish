@@ -18,7 +18,11 @@
       </div>
     </div>
     <div class="image-content">
-      <img src="@/assets/images/IMG_1889.png" alt="About Modish Era" />
+      <img
+        src="@/assets/images/front-image-1.jpeg"
+        alt="About Modish Era"
+        title="about modish era"
+      />
     </div>
   </div>
 </template>

@@ -14,20 +14,21 @@ const router = createRouter({
           name: "landing-page",
           component: () => import("@/views/LandingPage.vue"),
           meta: {
-            title: 'Modish Era - Fashion & Style Store',
-            description: 'Your premier destination for fashion, style, and trendy clothing.',
-            sitelink: true
-          }
+            title: "Modish Era - Fashion & Style Store",
+            description:
+              "Your premier destination for fashion, style, and trendy clothing.",
+            sitelink: true,
+          },
         },
         {
           path: "/product",
           name: "product",
           component: () => import("@/views/ProductView.vue"),
           meta: {
-            title: 'Shop All Products - Modish Era',
-            description: 'Browse our collection of trendy fashion items.',
-            sitelink: true
-          }
+            title: "Shop All Products - Modish Era",
+            description: "Browse our collection of trendy fashion items.",
+            sitelink: true,
+          },
         },
 
         // {
@@ -41,16 +42,21 @@ const router = createRouter({
           component: () => import("@/views/ProductDetailPage.vue"),
         },
         {
-          path: '/about',
-          name: 'about',
-          component: () => import('@/views/AboutPage.vue')
+          path: "/about",
+          name: "about",
+          component: () => import("@/views/AboutPage.vue"),
         },
-         
+
         {
-          path: '/checkout',
-          name: 'checkout',
-          component: () => import('@/views/CheckoutView.vue')
-    }
+          path: "/checkout",
+          name: "checkout",
+          component: () => import("@/views/CheckoutView.vue"),
+        },
+        {
+          path: "/faqs",
+          name: "faqs",
+          component: () => import("@/views/FAQsPage.vue"),
+        },
       ],
     },
     // {
@@ -59,31 +65,32 @@ const router = createRouter({
     //   // this generates a separate chunk (About.[hash].js) for this route
     //   // which is lazy-loaded when the route is visited.
     //   component: () => import("../views/AboutView.vue"),
-
   ],
   scrollBehavior(to, from, savedPosition) {
     if (savedPosition) {
       // If there's a saved position (when using browser back/forward buttons)
-      return savedPosition
+      return savedPosition;
     } else {
       // Scroll to top for all other navigation
-      return { top: 0 }
+      return { top: 0 };
     }
-  }
+  },
 });
 
 // Update page title and meta description
 router.beforeEach((to, from, next) => {
   // document.title = to.meta?.title ?? 'Modish Era';
-  
+
   // Type the meta element correctly
-  let metaDescription = document.querySelector('meta[name="description"]') as HTMLMetaElement;
+  let metaDescription = document.querySelector(
+    'meta[name="description"]'
+  ) as HTMLMetaElement;
   if (!metaDescription) {
-    metaDescription = document.createElement('meta') as HTMLMetaElement;
-    metaDescription.name = 'description';
+    metaDescription = document.createElement("meta") as HTMLMetaElement;
+    metaDescription.name = "description";
     document.head.appendChild(metaDescription);
   }
-  
+
   next();
 });
 
