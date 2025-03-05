@@ -48,6 +48,19 @@ export const useProductsStore = defineStore("products", {
       }
       this.Products = response;
     },
+    async fetchReplaceProducts(category: any = null) {
+      console.log("fetching products");
+      const response: any = await ProductsAPI.getProducts(category);
+      console.log(response);
+      if (response) {
+        if (response.results) {
+          this.ProductsList = response.results;
+          this.CurrentPage = response.current_page;
+          this.NextPage = response.next;
+        }
+      }
+      this.Products = response;
+    },
     async fetchCategories() {
       const response = await ProductsAPI.getCategories();
       this.Categories = response;

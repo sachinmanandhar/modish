@@ -23,4 +23,5 @@ export enum Action {
   WomensWear = "womens-wear",
   BulkOrder = "bulk-order",
   TopProducts = "top-products",
+  FAQs = "faqs"
 }

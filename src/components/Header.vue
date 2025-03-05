@@ -111,6 +111,7 @@ const quickLinks = [
 
   // { title: 'Contact', route: '/contact' },
   { title: "Checkout", route: "/checkout" },
+  { title: "FAQs", route: "/faqs" },
 ];
 
 const phoneNumber = "+9779860913842"; // Store phone number as a constant for reuse
@@ -224,7 +225,7 @@ onMounted(async () => {
         class="container-width"
         :class="{
           'text-light bg-dark': $q.dark.isActive,
-          'text-black bg-grey-3': !$q.dark.isActive,
+          'text-black bg-white': !$q.dark.isActive,
         }"
         style="flex-wrap: wrap"
       >
@@ -242,17 +243,17 @@ onMounted(async () => {
           <div class="row">
             <router-link to="/" class="site-logo row q-mr-xs">
               <img
-                style="height: 5.2rem; width: auto"
+                style="height: 6.2rem; width: auto"
                 width="83"
                 height="83"
-                src="@/assets/images/modish.png"
+                src="@/assets/images/new-modish-logo.jpeg"
                 alt="Modish Era Logo - Fashion & Style Store"
                 loading="eager"
               />
-              <div class="site-title column justify-center q-ml-sm q-mr-md">
+              <!-- <div class="site-title column justify-center q-ml-sm q-mr-md">
                 <h1 class="text-h4 text-weight-bold">Modish</h1>
                 <h2 class="text-subtitle1">Era</h2>
-              </div>
+              </div> -->
             </router-link>
           </div>
         </q-toolbar-title>
@@ -289,14 +290,14 @@ onMounted(async () => {
                     style="height: 5.5rem; width: auto"
                     width="88"
                     height="88"
-                    src="@/assets/images/modish.png"
+                    src="@/assets/images/new-modish-logo.jpeg"
                     alt="Modish Era Logo - Fashion & Style Store"
                     loading="eager"
                   />
-                  <div class="site-title column justify-center q-ml-sm">
+                  <!-- <div class="site-title column justify-center q-ml-sm">
                     <h1 class="text-h4 text-weight-bold">Modish</h1>
                     <h2 class="text-subtitle1">Era</h2>
-                  </div>
+                  </div> -->
                 </router-link>
                 <div
                   class="column justify-center q-mr-xl"
@@ -520,7 +521,7 @@ onMounted(async () => {
   max-width: 1600px;
   width: 100%;
   margin: 0 auto;
-  padding: 8px 16px;
+  padding: 8px 24px;
 }
 
 .quick-links {

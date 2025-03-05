@@ -189,7 +189,9 @@ const submitOrder = async () => {
     await GENERALAPI.postBulkOrder(transformedData).then((res: any) => {
       $q.notify({
         type: "positive",
-        message: "Order placed successfully!",
+        message:
+          "🎉 Thanks for your order! We'll reach out to you soon with delivery details 😊",
+        timeout: 7000,
       });
       generalStore.clearCart();
       orderForm.value = {
@@ -198,7 +200,7 @@ const submitOrder = async () => {
         address: "",
         location: "",
       };
-      router.push({ name: "product", params: { categoryId: "0" } });
+      router.push({ name: "landing-page" });
     });
   } catch (error) {
     $q.notify({

@@ -4,7 +4,7 @@
     <div class="product-grid">
       <!-- Product Image Section -->
       <div class="product-image-container">
-        <div class="product-image cursor-pointer">
+        <div class="product-image-detail cursor-pointer">
           <q-img
             :src="
               selectedVariant?.image_medium_url ||
@@ -70,7 +70,24 @@
         </div>
 
         <h1 class="product-title">{{ product.name }}</h1>
-        <p class="price">NPR {{ formatPrice(product.price) }}</p>
+        <div class="price-container">
+          <template v-if="product.discount_percentage > 0">
+            <span class="original-price"
+              >NPR {{ formatPrice(product.price) }}</span
+            >
+            <span class="final-price"
+              >NPR {{ formatPrice(product.final_price) }}</span
+            >
+            <q-badge color="negative" class="discount-badge text-white">
+              {{ product.discount_percentage }}% OFF
+            </q-badge>
+          </template>
+          <template v-else>
+            <span class="final-price"
+              >NPR {{ formatPrice(product.final_price) }}</span
+            >
+          </template>
+        </div>
 
         <div class="description">
           <h6>Description</h6>
@@ -187,7 +204,7 @@ const addToCart = (item: any) => {
     const cartItem = {
       id: variantToAdd.id,
       name: item.name,
-      price: item.price,
+      price: item.final_price,
       quantity: 1,
       image: variantToAdd.image_small_url || variantToAdd.image,
       parentId: item.id,
@@ -255,7 +272,7 @@ const selectedVariantImage = computed(() => {
   top: 2rem;
 }
 
-.product-image {
+.product-image-detail {
   width: 100%;
   border-radius: 16px;
   overflow: hidden;
@@ -263,7 +280,7 @@ const selectedVariantImage = computed(() => {
   max-height: 700px;
 }
 
-.product-image img {
+.product-image-detail img {
   width: 100%;
   height: auto;
   object-fit: contain;
@@ -297,11 +314,28 @@ const selectedVariantImage = computed(() => {
   color: #666;
 }
 
-.price {
-  font-size: 2rem;
-  font-weight: 600;
-  color: #2c5282;
+.price-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
   margin: 0;
+
+  .original-price {
+    text-decoration: line-through;
+    color: #666;
+    font-size: 1.5rem;
+  }
+
+  .final-price {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #2c5282;
+  }
+
+  .discount-badge {
+    font-size: 1rem;
+    padding: 4px 8px;
+  }
 }
 
 .description {
@@ -368,7 +402,7 @@ const selectedVariantImage = computed(() => {
     font-size: 1.5rem;
   }
 
-  .product-image {
+  .product-image-detail {
     max-height: 500px;
   }
 

@@ -1,6 +1,5 @@
 <template>
   <div class=""></div>
-  {{ hasMorePages }}
   <div class="product-list-container">
     <!-- Hero Section -->
     <div class="hero-section q-pa-xl text-center">
@@ -33,7 +32,7 @@
         <div class="row q-col-gutter-md justify-center">
           <div class="col-12 col-sm-4 col-md-3 col-lg-2">
             <q-select
-              v-model="selectedCategory"
+              v-model="filter.category"
               :options="Categories"
               label="Category"
               outlined
@@ -41,22 +40,24 @@
               class="full-width"
               map-options
               emit-value
-              @update:model-value="handleCategoryChange"
+              @update:model-value="onCategoryChange"
             />
           </div>
           <div class="col-12 col-sm-4 col-md-3 col-lg-2">
             <q-select
-              v-model="sortBy"
+              v-model="filter.ordering"
               :options="sortOptions"
               label="Sort by"
               outlined
               dense
               class="full-width"
+              map-options
+              emit-value
             />
           </div>
           <div class="col-12 col-sm-4 col-md-3 col-lg-2">
             <q-input
-              v-model="searchQuery"
+              v-model="filter.search"
               outlined
               dense
               label="Search products"
@@ -70,50 +71,34 @@
         </div>
       </div>
 
-      <!-- Products Grid -->
-      <q-infinite-scroll @load="onLoad" :offset="250">
-        <div class="row q-col-gutter-md">
-          <div
-            v-for="product in filteredProducts"
-            :key="product.id"
-            class="col-12 col-sm-6 col-md-4 col-lg-3"
-          >
-            <q-card flat bordered class="product-card">
-              <div class="image-container">
-                <q-img
-                  :src="
-                    selectedProduct(product)?.image_medium_url ||
-                    selectedProduct(product)?.image
-                  "
-                  :ratio="1"
-                  class="product-image"
-                  @click="goToProductDetail(product.id)"
-                  loading="lazy"
-                  :placeholder-src="placeholderImage"
-                >
-                  <template v-slot:loading>
-                    <div class="image-placeholder" />
-                  </template>
-                </q-img>
-              </div>
+      <q-inner-loading :showing="isLoading">
+        <q-spinner-gears size="50px" color="primary" />
+      </q-inner-loading>
 
-              <!-- Add Product images selection -->
-              <div class="product-images-list">
-                <div
-                  v-for="variant in product.products"
-                  :key="variant.id"
-                  class="product-thumb-container"
-                  :class="{
-                    selected: selectedProductIds[product.id] === variant.id,
-                  }"
-                  @click="selectProduct(product.id, variant.id)"
-                >
+      <!-- Products Grid -->
+      <div class="products-container">
+        <q-infinite-scroll
+          @load="onLoad"
+          :offset="250"
+          scroll-target="body"
+          v-if="!isLoading"
+        >
+          <div class="row q-col-gutter-md">
+            <div
+              v-for="product in filteredProducts"
+              :key="product.id"
+              class="col-12 col-sm-6 col-md-4 col-lg-3"
+            >
+              <q-card flat bordered class="product-card">
+                <div class="image-container">
                   <q-img
-                    :src="variant.image_thumbnail_url || variant.image"
+                    :src="
+                      selectedProduct(product)?.image_medium_url ||
+                      selectedProduct(product)?.image
+                    "
                     :ratio="1"
-                    class="product-thumb"
-                    width="50"
-                    height="50"
+                    class="product-image"
+                    @click="goToProductDetail(product.id)"
                     loading="lazy"
                     :placeholder-src="placeholderImage"
                   >
@@ -122,94 +107,94 @@
                     </template>
                   </q-img>
                 </div>
-              </div>
 
-              <q-card-section class="q-pa-sm text-center">
-                <div class="product-info">
-                  <span
-                    class="text-subtitle2 product-title cursor-pointer"
-                    @click="goToProductDetail(product.id)"
+                <!-- Add Product images selection -->
+                <div class="product-images-list">
+                  <div
+                    v-for="variant in product.products"
+                    :key="variant.id"
+                    class="product-thumb-container"
+                    :class="{
+                      selected: selectedProductIds[product.id] === variant.id,
+                    }"
+                    @click="selectProduct(product.id, variant.id)"
                   >
-                    {{ product.name }}
-                  </span>
-                  <span class="text-subtitle2">NPR {{ product.price }}</span>
+                    <q-img
+                      :src="variant.image_thumbnail_url || variant.image"
+                      :ratio="1"
+                      class="product-thumb"
+                      width="50"
+                      height="50"
+                      loading="lazy"
+                      :placeholder-src="placeholderImage"
+                    >
+                      <template v-slot:loading>
+                        <div class="image-placeholder" />
+                      </template>
+                    </q-img>
+                  </div>
                 </div>
-                <div class="row q-gutter-sm justify-center q-mt-sm">
-                  <q-btn
-                    outline
-                    color="primary"
-                    class="buy-button"
-                    label="Buy Now"
-                    size="sm"
-                    @click="buyNow(product, selectedProduct(product)?.id)"
-                  />
-                  <q-btn
-                    outline
-                    color="secondary"
-                    class="cart-button"
-                    label="Add to Cart"
-                    size="sm"
-                    @click="addToCart(product, selectedProduct(product)?.id)"
-                  />
-                </div>
-              </q-card-section>
-            </q-card>
-          </div>
-        </div>
-        <template v-slot:loading>
-          <div class="row justify-center q-my-md">
-            <q-spinner-dots color="primary" size="40px" />
-          </div>
-        </template>
-      </q-infinite-scroll>
-    </div>
 
-    <!-- Order Dialog -->
-    <!-- <q-dialog v-model="orderDialog">
-      <q-card style="min-width: 300px; width: 100%; max-width: 400px">
-        <q-card-section class="bg-primary text-white">
-          <div class="text-h6">Place Order</div>
-        </q-card-section>
-
-        <q-card-section class="q-pt-md">
-          <q-form @submit="submitOrder" class="q-gutter-md">
-            <q-input
-              v-model="orderForm.name"
-              label="Full Name"
-              :rules="[(val:any) => !!val || 'Name is required']"
-              outlined
-            />
-            <q-input
-              v-model="orderForm.phone"
-              label="Phone Number"
-              :rules="[(val:any) => !!val || 'Phone number is required']"
-              outlined
-            />
-            <q-input
-              v-model="orderForm.address"
-              label="Delivery Address"
-              type="textarea"
-              :rules="[(val:any) => !!val || 'Address is required']"
-              outlined
-            />
-            <q-input
-              v-model="orderForm.quantity"
-              label="Quantity"
-              type="number"
-              :rules="[
-                (val:any) => val > 0 || 'Quantity must be greater than 0',
-                (val:any) => val <= 10 || 'Maximum quantity is 10'
-              ]"
-              outlined
-            />
-            <div class="row justify-end q-mt-md">
-              <q-btn label="Cancel" color="grey" v-close-popup class="q-mr-sm" />
-              <q-btn label="Place Order" type="submit" color="primary" />
+                <q-card-section class="q-pa-sm text-center">
+                  <div class="product-info">
+                    <span
+                      class="text-subtitle2 product-title cursor-pointer"
+                      @click="goToProductDetail(product.id)"
+                    >
+                      {{ product.name }}
+                    </span>
+                    <div class="price-container">
+                      <template v-if="product.discount_percentage > 0">
+                        <span class="original-price"
+                          >NPR {{ product.price }}</span
+                        >
+                        <span class="final-price"
+                          >NPR {{ product.final_price }}</span
+                        >
+                        <q-badge
+                          color="negative"
+                          class="discount-badge text-white"
+                        >
+                          {{ product.discount_percentage }}% OFF
+                        </q-badge>
+                      </template>
+                      <template v-else>
+                        <span class="final-price"
+                          >NPR {{ product.final_price }}</span
+                        >
+                      </template>
+                    </div>
+                  </div>
+                  <div class="row q-gutter-sm justify-center q-mt-sm">
+                    <q-btn
+                      outline
+                      color="primary"
+                      class="buy-button"
+                      label="Buy Now"
+                      size="sm"
+                      @click="buyNow(product, selectedProduct(product)?.id)"
+                    />
+                    <q-btn
+                      outline
+                      color="secondary"
+                      class="cart-button"
+                      label="Add to Cart"
+                      size="sm"
+                      @click="addToCart(product, selectedProduct(product)?.id)"
+                    />
+                  </div>
+                </q-card-section>
+              </q-card>
             </div>
-          </q-form>
-        </q-card-section>
-      </q-card>
-    </q-dialog> -->
+          </div>
+          <template v-slot:loading v-if="hasMorePages">
+            <div class="row justify-center q-my-md">
+              <q-spinner-dots color="primary" size="40px" />
+            </div>
+          </template>
+        </q-infinite-scroll>
+      </div>
+    </div>
 
     <!-- Image Dialog -->
     <q-dialog
@@ -246,26 +231,29 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onBeforeMount } from "vue";
+import { ref, computed, onBeforeMount, watch } from "vue";
 import { useProductsStore } from "@/stores/products";
 import { useQuasar } from "quasar";
 import { useRoute } from "vue-router";
 import { useGeneralStore } from "@/stores/general";
 import { useRouter } from "vue-router";
+import { onMounted } from "vue";
 const ProductStore = useProductsStore();
 const $q = useQuasar();
 const $route = useRoute();
 const generalStore = useGeneralStore();
 const router = useRouter();
-
-// Filter and Sort
-const selectedCategory: any = ref(null);
-const searchQuery = ref("");
-const sortBy = ref("name");
+const filter: any = ref({
+  search: null,
+  ordering: null,
+  category: null,
+});
+const isLoading = ref(true);
 const sortOptions = [
+  { label: "Latest Arrivals", value: "-created_at" },
   { label: "Name (A-Z)", value: "name" },
-  { label: "Price (Low to High)", value: "price_asc" },
-  { label: "Price (High to Low)", value: "price_desc" },
+  { label: "Price (Low to High)", value: "price" },
+  { label: "Price (High to Low)", value: "-price" },
 ];
 
 //ref
@@ -277,9 +265,9 @@ const description = ref(
 const Categories = computed(() => {
   return [
     { label: "All", value: null },
-    ...ProductStore.getCategories.map((category: string) => ({
-      label: category,
-      value: category,
+    ...ProductStore.getCategories.map((category: any) => ({
+      label: category.label,
+      value: category.value,
     })),
   ];
 });
@@ -300,94 +288,25 @@ const currentPage = computed(() => {
 const filteredProducts = computed(() => {
   let products: any = ProductStore.getProducts;
 
-  // Search filter
-  if (searchQuery.value) {
-    products = products.filter((product: any) =>
-      product.name.toLowerCase().includes(searchQuery.value.toLowerCase())
-    );
-  }
-
-  // Category filter
-  if (selectedCategory.value) {
-    products = products.filter(
-      (product: any) => product.category === selectedCategory.value
-    );
-  }
-
-  // Sort products
-  if (sortBy.value === "price_asc") {
-    return [...products].sort((a: any, b: any) => a.price - b.price);
-  } else if (sortBy.value === "price_desc") {
-    return [...products].sort((a: any, b: any) => b.price - a.price);
-  }
-
   return products;
 });
 const onLoad = async (index: any, done: any) => {
   console.log("calling on Load", index, done);
+
   if (hasMorePages.value) {
-    await ProductStore.fetchProducts({ page: index + 1 });
+    await new Promise((resolve) => setTimeout(resolve, 1000)); // Add 1 second delay
+    await ProductStore.fetchProducts({
+      ...filter.value,
+      page: currentPage.value + 1,
+    });
+    done(); // Call done() after fetching the data
+  } else {
+    done(); // Call done() when there are no more pages
   }
 };
-// Methods
-const handleCategoryChange = async () => {
-  await ProductStore.fetchProducts({
-    category: selectedCategory.value,
-  });
-};
 
-// Dialog controls and other functionality
-const orderDialog = ref(false);
 const imageDialog = ref(false);
 const selectedImage = ref("");
-const selectedProductId: any = ref(null);
-
-// Form handling
-const orderForm = ref({
-  name: "",
-  phone: "",
-  address: "",
-  quantity: 1,
-});
-
-const submitOrder = async () => {
-  try {
-    // Your order submission logic here
-    // ...
-
-    $q.notify({
-      type: "positive",
-      message: "Order placed successfully!",
-    });
-
-    orderDialog.value = false;
-    orderForm.value = {
-      name: "",
-      phone: "",
-      address: "",
-      quantity: 1,
-    };
-
-    // Navigate using router
-    router.push({ name: "product", query: { categoryId: "0" } });
-  } catch (error) {
-    $q.notify({
-      type: "negative",
-      message: "Failed to place order. Please try again.",
-    });
-  }
-};
-
-// Add these method definitions
-const showImageDialog = (image: string) => {
-  selectedImage.value = image;
-  imageDialog.value = true;
-};
-
-const showOrderDialog = (productId: number) => {
-  selectedProductId.value = productId;
-  orderDialog.value = true;
-};
 
 const selectedProductIds: any = ref({});
 
@@ -415,7 +334,7 @@ const addToCart = (item: any, productId: number) => {
     const cartItem = {
       id: selectedVariant.id,
       name: item.name,
-      price: item.price,
+      price: item.final_price,
       quantity: 1,
       image: selectedVariant.image_medium_url || selectedVariant.image,
       parentId: item.id,
@@ -449,7 +368,23 @@ const placeholderImage = ref(
   'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"%3E%3C/svg%3E'
 );
 
+// Add watch effect
+watch(
+  filter.value,
+  async (newValue) => {
+    console.log("filter value changed");
+    isLoading.value = true;
+    await ProductStore.fetchReplaceProducts(newValue);
+    await new Promise((resolve) => setTimeout(resolve, 1000)); // Add 2 second delay
+
+    isLoading.value = false;
+  },
+  { deep: true } // Use deep watching since filter is an object
+);
+
 onBeforeMount(async () => {
+  isLoading.value = false;
+  ProductStore.ProductsList = [];
   await ProductStore.fetchCategories();
   const categoryId = $route.query.categoryId as string;
   if (categoryId && categoryId !== "0") {
@@ -457,16 +392,31 @@ onBeforeMount(async () => {
     await ProductStore.fetchProducts({
       category: categoryId,
     });
-
-    selectedCategory.value = categoryId;
   } else {
-    selectedCategory.value = null;
+    filter.value.category = null;
     await ProductStore.fetchProducts();
     await ProductStore.fetchCategories();
   }
 
   console.log("categoryId", categoryId);
 });
+onMounted(async () => {
+  const categoryId = $route.query.categoryId;
+  filter.value.category = categoryId ? Number(categoryId) : null;
+});
+
+// Add this computed property in the script section
+const selectedCategoryLabel = computed(() => {
+  const category = Categories.value.find(
+    (cat) => cat.value === filter.value.category
+  );
+  return category ? category.label : "";
+});
+
+// Add this method in the script section
+const onCategoryChange = async (value: any) => {
+  filter.value.category = value;
+};
 </script>
 
 <style lang="scss" scoped>
@@ -687,5 +637,33 @@ onBeforeMount(async () => {
   background-color: #f0f0f0;
   width: 100%;
   height: 100%;
+}
+
+.products-container {
+  padding: 16px;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.price-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .original-price {
+    text-decoration: line-through;
+    color: #666;
+    font-size: 0.9em;
+  }
+
+  .final-price {
+    color: #1976d2;
+    font-weight: bold;
+  }
+
+  .discount-badge {
+    font-size: 0.8em;
+    padding: 2px 6px;
+  }
 }
 </style>

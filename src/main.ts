@@ -4,7 +4,7 @@ import { Quasar } from "quasar";
 import App from "./App.vue";
 import router from "./router";
 import { createI18n } from "vue-i18n";
-import { Notify, LocalStorage, Dialog } from "quasar";
+import { Notify, LocalStorage, Dialog, Loading } from "quasar";
 
 // import "./assets/main.css";
 // Import icon libraries
@@ -259,7 +259,7 @@ const i18n = createI18n({
 });
 const app = createApp(App);
 app.use(Quasar, {
-  plugins: { Notify, Dialog, LocalStorage }, // import Quasar plugins and add here
+  plugins: { Notify, Dialog, LocalStorage, Loading }, // import Quasar plugins and add here
   config: {
     notify: {
       position: "top-right",

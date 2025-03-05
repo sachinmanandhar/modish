@@ -1,11 +1,5 @@
 <script setup lang="ts">
 import SiteHeader from "@/components/Header.vue";
-import SiteFooter from "@/components/SiteFooter.vue";
-import { useRoute } from "vue-router";
-import { computed } from "vue";
-
-const route = useRoute();
-const hideFooter = computed(() => route.name === "product");
 </script>
 
 <template>
@@ -19,7 +13,6 @@ const hideFooter = computed(() => route.name === "product");
         <router-view class="full-width" />
       </section>
     </q-page-container>
-    <SiteFooter v-if="!hideFooter" />
   </q-layout>
 </template>
 
@@ -27,15 +20,12 @@ const hideFooter = computed(() => route.name === "product");
 * {
   line-height: 1.7rem;
 }
-.col_white_amrc {
-  color: #fff;
-}
 
 .container-width {
   max-width: 1600px;
   width: 100%;
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 0 16px;
 }
 
 .custom-layout .q-layout__section--marginal {

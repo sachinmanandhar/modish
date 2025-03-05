@@ -16,7 +16,6 @@
           emit-value
         /> -->
         <h4 class="title text-bold">Latest Arrivals</h4>
-        <!-- {{ Categories }} -->
       </div>
       <Carousel
         :wrap-around="true"
@@ -134,14 +133,27 @@
                 {{ item.category }}
               </div>
               <div class="text-h6 product-price">
-                NRS {{ item.price }}
-                <q-badge
-                  v-if="item.is_in_stock"
-                  color="positive"
-                  class="q-ml-sm"
-                >
-                  In Stock
-                </q-badge>
+                <div class="price-container">
+                  <template v-if="item.discount_percentage > 0">
+                    <span class="original-price">NRS {{ item.price }}</span>
+                    <span class="final-price">NRS {{ item.final_price }}</span>
+                    <q-badge color="negative" class="discount-badge text-white">
+                      {{ item.discount_percentage }}% OFF
+                    </q-badge>
+                  </template>
+                  <template v-else>
+                    <span class="final-price">NRS {{ item.final_price }}</span>
+                  </template>
+                </div>
+                <div>
+                  <q-badge
+                    v-if="item.is_in_stock"
+                    color="positive"
+                    class="q-ml-sm"
+                  >
+                    In Stock
+                  </q-badge>
+                </div>
               </div>
               <div class="row q-gutter-sm justify-center">
                 <q-btn
@@ -264,7 +276,7 @@
             </div>
 
             <!-- Product thumbnails -->
-            <div class="product-images-list">
+            <div class="product-images-list" style="overflow: hidden">
               <div
                 v-for="product in item.products"
                 :key="product.id"
@@ -305,14 +317,27 @@
                 {{ item.category }}
               </div>
               <div class="text-h6 product-price">
-                NRS {{ item.price }}
-                <q-badge
-                  v-if="item.is_in_stock"
-                  color="positive"
-                  class="q-ml-sm"
-                >
-                  In Stock
-                </q-badge>
+                <div class="price-container">
+                  <template v-if="item.discount_percentage > 0">
+                    <span class="original-price">NRS {{ item.price }}</span>
+                    <span class="final-price">NRS {{ item.final_price }}</span>
+                    <q-badge color="negative" class="discount-badge text-white">
+                      {{ item.discount_percentage }}% OFF
+                    </q-badge>
+                  </template>
+                  <template v-else>
+                    <span class="final-price">NRS {{ item.final_price }}</span>
+                  </template>
+                </div>
+                <div>
+                  <q-badge
+                    v-if="item.is_in_stock"
+                    color="positive"
+                    class="q-ml-sm"
+                  >
+                    In Stock
+                  </q-badge>
+                </div>
               </div>
               <div class="row q-gutter-sm justify-center">
                 <q-btn
@@ -476,14 +501,27 @@
                 {{ item.category }}
               </div>
               <div class="text-h6 product-price">
-                NRS {{ item.price }}
-                <q-badge
-                  v-if="item.is_in_stock"
-                  color="positive"
-                  class="q-ml-sm"
-                >
-                  In Stock
-                </q-badge>
+                <div class="price-container">
+                  <template v-if="item.discount_percentage > 0">
+                    <span class="original-price">NRS {{ item.price }}</span>
+                    <span class="final-price">NRS {{ item.final_price }}</span>
+                    <q-badge color="negative" class="discount-badge text-white">
+                      {{ item.discount_percentage }}% OFF
+                    </q-badge>
+                  </template>
+                  <template v-else>
+                    <span class="final-price">NRS {{ item.final_price }}</span>
+                  </template>
+                </div>
+                <div>
+                  <q-badge
+                    v-if="item.is_in_stock"
+                    color="positive"
+                    class="q-ml-sm"
+                  >
+                    In Stock
+                  </q-badge>
+                </div>
               </div>
               <div class="row q-gutter-sm justify-center">
                 <q-btn
@@ -783,7 +821,7 @@ const addToCart = (item: any, productId: number) => {
     const cartItem = {
       id: selectedVariant.id,
       name: item.name,
-      price: item.price,
+      price: item.final_price,
       quantity: 1,
       image: selectedVariant.image_small_url || selectedVariant.image, // Use optimized image
       parentId: item.id,
@@ -1063,5 +1101,31 @@ const setupImageObserver = () => {
 // Add will-change for smoother animations
 .carousel__track {
   will-change: transform;
+}
+
+.price-container {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.original-price {
+  text-decoration: line-through;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.final-price {
+  font-weight: bold;
+  color: #2c3e50;
+  font-size: 1rem;
+}
+
+.discount-badge {
+  background-color: #ffd700;
+  color: #2c3e50;
+  padding: 5px 8px 3px 7px;
+  border-radius: 4px;
+  font-size: 0.8rem;
 }
 </style>

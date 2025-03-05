@@ -5,27 +5,38 @@
         <!-- Company Info -->
         <div class="col-12 col-sm-6 col-md-3">
           <div class="text-h6 q-mb-md">About Us</div>
-          <img 
-            src="@/assets/images/modish.jpg" 
-            alt="Logo" 
+          <img
+            src="@/assets/images/new-modish-logo.jpeg"
+            alt="Logo"
             style="height: 100px; width: auto; margin-bottom: 16px"
             loading="lazy"
           />
           <p class="text-body2">
-            Your trusted fashion destination. We provide quality clothing and accessories
-            for the modern woman.
+            Your trusted fashion destination. We provide quality clothing and
+            accessories for the modern woman.
           </p>
           <!-- Social Media Icons -->
           <div class="row q-gutter-sm q-mt-md">
-            <q-btn round flat icon="fab fa-facebook" href="https://www.facebook.com/profile.php?id=61556899834852" target="_blank" />
-            <q-btn round flat icon="fab fa-instagram" href="https://www.instagram.com/themodish_era/" target="_blank" />
-            <q-btn 
-              round 
-              flat 
-              icon="fab fa-whatsapp" 
-              @click="copyToClipboard"
-            >
-              <q-tooltip anchor="bottom middle" self="top middle" :offset="[0, 8]">
+            <q-btn
+              round
+              flat
+              icon="fab fa-facebook"
+              href="https://www.facebook.com/profile.php?id=61556899834852"
+              target="_blank"
+            />
+            <q-btn
+              round
+              flat
+              icon="fab fa-instagram"
+              href="https://www.instagram.com/themodish_era/"
+              target="_blank"
+            />
+            <q-btn round flat icon="fab fa-whatsapp" @click="copyToClipboard">
+              <q-tooltip
+                anchor="bottom middle"
+                self="top middle"
+                :offset="[0, 8]"
+              >
                 Click to copy: {{ phoneNumber }}
               </q-tooltip>
             </q-btn>
@@ -38,7 +49,7 @@
           <div class="text-h6 q-mb-md">Quick Links</div>
           <div class="column q-gutter-sm">
             <a
-              v-for="link in quickLinks" 
+              v-for="link in quickLinks"
               :key="link.title"
               :href="link.route"
               class="footer-link"
@@ -101,8 +112,8 @@
           © {{ new Date().getFullYear() }} Modish Era. All rights reserved.
         </div>
         <div class="row q-gutter-sm">
-          <router-link 
-            v-for="link in bottomLinks" 
+          <router-link
+            v-for="link in bottomLinks"
             :key="link.title"
             :to="link.route"
             class="footer-link text-caption"
@@ -116,40 +127,40 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
-import { useQuasar } from 'quasar';
+import { ref } from "vue";
+import { useQuasar } from "quasar";
 
 const $q = useQuasar();
-const email = ref('');
-const phoneNumber = '+9779860913842';
+const email = ref("");
+const phoneNumber = "+9779860913842";
 
 const quickLinks = [
-  { title: 'Home', route: '/#home' },
-  { title: 'Shop', route: '/#shop' },
-  { title: 'Sale', route: '/#sale' },
-  { title: 'About Us', route: '/#about' },
-  { title: 'Contact', route: '/contact' }
+  { title: "Home", route: "/#home" },
+  { title: "Shop", route: "/#shop" },
+  { title: "Sale", route: "/#sale" },
+  { title: "About Us", route: "/#about" },
+  { title: "Contact", route: "/contact" },
 ];
 
 const bottomLinks = [
-  { title: 'Privacy Policy', route: '/privacy' },
-  { title: 'Terms of Service', route: '/terms' },
-  { title: 'Shipping Info', route: '/shipping' },
-  { title: 'Returns', route: '/returns' }
+  { title: "Privacy Policy", route: "/privacy" },
+  { title: "Terms of Service", route: "/terms" },
+  { title: "Shipping Info", route: "/shipping" },
+  { title: "Returns", route: "/returns" },
 ];
 
 const subscribeNewsletter = () => {
   // Implement newsletter subscription logic
-  console.log('Subscribe:', email.value);
+  console.log("Subscribe:", email.value);
 };
 
 const scrollToSection = (event: Event, route: string) => {
-  if (route.includes('#')) {
+  if (route.includes("#")) {
     event.preventDefault();
-    const elementId = route.split('#')[1];
+    const elementId = route.split("#")[1];
     const element = document.getElementById(elementId);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+      element.scrollIntoView({ behavior: "smooth" });
     }
   }
 };
@@ -159,17 +170,17 @@ const copyToClipboard = async (e: Event) => {
   try {
     await navigator.clipboard.writeText(phoneNumber);
     $q.notify({
-      message: 'Phone number copied to clipboard!',
-      type: 'positive',
-      position: 'top',
-      timeout: 2000
+      message: "Phone number copied to clipboard!",
+      type: "positive",
+      position: "top",
+      timeout: 2000,
     });
     window.location.href = `tel:${phoneNumber}`;
   } catch (err) {
     $q.notify({
-      message: 'Failed to copy number',
-      type: 'negative',
-      position: 'top'
+      message: "Failed to copy number",
+      type: "negative",
+      position: "top",
     });
   }
 };

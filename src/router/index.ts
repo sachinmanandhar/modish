@@ -24,13 +24,18 @@ const router = createRouter({
           path: "/product",
           name: "product",
           component: () => import("@/views/ProductView.vue"),
-          meta: {
-            title: "Shop All Products - Modish Era",
-            description: "Browse our collection of trendy fashion items.",
-            sitelink: true,
-          },
+          // children: [
+          //   {
+          //     path: "",
+          //     component: () => import("@/views/ProductView.vue"),
+          //     meta: {
+          //       title: "Shop All Products - Modish Era",
+          //       description: "Browse our collection of trendy fashion items.",
+          //       sitelink: true,
+          //     },
+          //   },
+          // ],
         },
-
         // {
         //   path: "dashboard",
         //   name: "dashboard",
@@ -59,6 +64,22 @@ const router = createRouter({
         },
       ],
     },
+    // {
+    //   path: "/product",
+    //   name: "product",
+    //   component: () => import("@/views/layouts/NoFooterLayout.vue"),
+    //   children: [
+    //     {
+    //       path: "",
+    //       component: () => import("@/views/ProductView.vue"),
+    //       meta: {
+    //         title: "Shop All Products - Modish Era",
+    //         description: "Browse our collection of trendy fashion items.",
+    //         sitelink: true,
+    //       },
+    //     },
+    //   ],
+    // },
     // {
     //   name: "about",
     //   // route level code-splitting
