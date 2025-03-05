@@ -1,13 +1,9 @@
 import { getAPI, postAPI } from "@/api";
 import { Action } from "@/api/actions";
-import { queryBuilder } from "@/utils/api.utils";
+
 export default new (class ProductsAPI {
-  public async getProducts(filters: any = null) {
-    // const params = category ? `?category=${category}` : "";
-    let params = "";
-    if (filters) {
-      params = queryBuilder(filters);
-    }
+  public async getProducts(category: any = null) {
+    const params = category ? `?category=${category}` : "";
     const response = await getAPI(Action.Products, params);
     return response;
   }

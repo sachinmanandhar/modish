@@ -213,7 +213,7 @@ onMounted(async () => {
   // Hide after 4 seconds
   setTimeout(() => {
     showWelcome.value = false;
-  }, 4000);
+  }, 1200);
 });
 </script>
 
@@ -224,7 +224,7 @@ onMounted(async () => {
         class="container-width"
         :class="{
           'text-light bg-dark': $q.dark.isActive,
-          'text-black bg-grey-3': !$q.dark.isActive,
+          'text-black bg-white': !$q.dark.isActive,
         }"
         style="flex-wrap: wrap"
       >
@@ -242,17 +242,17 @@ onMounted(async () => {
           <div class="row">
             <router-link to="/" class="site-logo row q-mr-xs">
               <img
-                style="height: 5.2rem; width: auto"
-                width="83"
-                height="83"
-                src="@/assets/images/modish.png"
+                style="height: 6.2rem; width: auto"
+                width="3"
+                height="103"
+                src="@/assets/images/new-modish.jpeg"
                 alt="Modish Era Logo - Fashion & Style Store"
                 loading="eager"
               />
-              <div class="site-title column justify-center q-ml-sm q-mr-md">
+              <!-- <div class="site-title column justify-center q-ml-sm q-mr-md">
                 <h1 class="text-h4 text-weight-bold">Modish</h1>
                 <h2 class="text-subtitle1">Era</h2>
-              </div>
+              </div> -->
             </router-link>
           </div>
         </q-toolbar-title>
@@ -289,7 +289,7 @@ onMounted(async () => {
                     style="height: 5.5rem; width: auto"
                     width="88"
                     height="88"
-                    src="@/assets/images/modish.png"
+                    src="@/assets/images/new-modish.jpeg"
                     alt="Modish Era Logo - Fashion & Style Store"
                     loading="eager"
                   />
@@ -395,6 +395,7 @@ onMounted(async () => {
 <style>
 .q-header {
   border-bottom: 1px solid var(--q-primary);
+  background-color: white;
 }
 .site-logo-label-container {
   font-size: 0.62rem;
@@ -553,7 +554,7 @@ onMounted(async () => {
   color: white;
   padding: 0.5rem;
   font-size: 1rem;
-  animation: fadeOut 0.5s ease-in-out 3.5s forwards;
+  animation: fadeOut 0.5s ease-in-out 2.5s forwards;
 }
 
 .typewriter {

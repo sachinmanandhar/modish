@@ -3,10 +3,7 @@ import ProductsAPI from "@/api/products";
 export const useProductsStore = defineStore("products", {
   state: () => {
     return {
-      Products: [],
-      ProductsList: [] as any,
-      CurrentPage: null,
-      NextPage: null,
+      Products: [] as any,
       Categories: [],
       FrontContent: [],
       SelectedCategory: null as any,
@@ -19,7 +16,7 @@ export const useProductsStore = defineStore("products", {
       return state.TopProducts;
     },
     getProducts: (state) => {
-      return state.ProductsList;
+      return state.Products;
     },
     getCategories: (state) => {
       return state.Categories;
@@ -37,15 +34,8 @@ export const useProductsStore = defineStore("products", {
   actions: {
     async fetchProducts(category: any = null) {
       console.log("fetching products");
-      const response: any = await ProductsAPI.getProducts(category);
+      const response = await ProductsAPI.getProducts(category);
       console.log(response);
-      if (response) {
-        if (response.results) {
-          this.ProductsList.push(...response.results);
-          this.CurrentPage = response.current_page;
-          this.NextPage = response.next;
-        }
-      }
       this.Products = response;
     },
     async fetchCategories() {

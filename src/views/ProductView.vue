@@ -1,6 +1,5 @@
 <template>
   <div class=""></div>
-  {{ hasMorePages }}
   <div class="product-list-container">
     <!-- Hero Section -->
     <div class="hero-section q-pa-xl text-center">
@@ -71,23 +70,49 @@
       </div>
 
       <!-- Products Grid -->
-      <q-infinite-scroll @load="onLoad" :offset="250">
-        <div class="row q-col-gutter-md">
-          <div
-            v-for="product in filteredProducts"
-            :key="product.id"
-            class="col-12 col-sm-6 col-md-4 col-lg-3"
-          >
-            <q-card flat bordered class="product-card">
-              <div class="image-container">
+
+      <div class="row q-col-gutter-md">
+        <div
+          v-for="product in filteredProducts"
+          :key="product.id"
+          class="col-12 col-sm-6 col-md-4 col-lg-3"
+        >
+          <q-card flat bordered class="product-card">
+            <div class="image-container">
+              <q-img
+                :src="
+                  selectedProduct(product)?.image_medium_url ||
+                  selectedProduct(product)?.image
+                "
+                :ratio="1"
+                class="product-image"
+                @click="goToProductDetail(product.id)"
+                loading="lazy"
+                :placeholder-src="placeholderImage"
+              >
+                <template v-slot:loading>
+                  <div class="image-placeholder" />
+                </template>
+              </q-img>
+            </div>
+
+            <!-- Add Product images selection -->
+            <div class="product-images-list">
+              <div
+                v-for="variant in product.products"
+                :key="variant.id"
+                class="product-thumb-container"
+                :class="{
+                  selected: selectedProductIds[product.id] === variant.id,
+                }"
+                @click="selectProduct(product.id, variant.id)"
+              >
                 <q-img
-                  :src="
-                    selectedProduct(product)?.image_medium_url ||
-                    selectedProduct(product)?.image
-                  "
+                  :src="variant.image_thumbnail_url || variant.image"
                   :ratio="1"
-                  class="product-image"
-                  @click="goToProductDetail(product.id)"
+                  class="product-thumb"
+                  width="50"
+                  height="50"
                   loading="lazy"
                   :placeholder-src="placeholderImage"
                 >
@@ -96,72 +121,40 @@
                   </template>
                 </q-img>
               </div>
+            </div>
 
-              <!-- Add Product images selection -->
-              <div class="product-images-list">
-                <div
-                  v-for="variant in product.products"
-                  :key="variant.id"
-                  class="product-thumb-container"
-                  :class="{
-                    selected: selectedProductIds[product.id] === variant.id,
-                  }"
-                  @click="selectProduct(product.id, variant.id)"
+            <q-card-section class="q-pa-sm text-center">
+              <div class="product-info">
+                <span
+                  class="text-subtitle2 product-title cursor-pointer"
+                  @click="goToProductDetail(product.id)"
                 >
-                  <q-img
-                    :src="variant.image_thumbnail_url || variant.image"
-                    :ratio="1"
-                    class="product-thumb"
-                    width="50"
-                    height="50"
-                    loading="lazy"
-                    :placeholder-src="placeholderImage"
-                  >
-                    <template v-slot:loading>
-                      <div class="image-placeholder" />
-                    </template>
-                  </q-img>
-                </div>
+                  {{ product.name }}
+                </span>
+                <span class="text-subtitle2">NPR {{ product.price }}</span>
               </div>
-
-              <q-card-section class="q-pa-sm text-center">
-                <div class="product-info">
-                  <span
-                    class="text-subtitle2 product-title cursor-pointer"
-                    @click="goToProductDetail(product.id)"
-                  >
-                    {{ product.name }}
-                  </span>
-                  <span class="text-subtitle2">NPR {{ product.price }}</span>
-                </div>
-                <div class="row q-gutter-sm justify-center q-mt-sm">
-                  <q-btn
-                    outline
-                    color="primary"
-                    class="buy-button"
-                    label="Buy Now"
-                    size="sm"
-                    @click="buyNow(product, selectedProduct(product)?.id)"
-                  />
-                  <q-btn
-                    outline
-                    color="secondary"
-                    class="cart-button"
-                    label="Add to Cart"
-                    size="sm"
-                    @click="addToCart(product, selectedProduct(product)?.id)"
-                  />
-                </div>
-              </q-card-section>
-            </q-card>
-          </div>
+              <div class="row q-gutter-sm justify-center q-mt-sm">
+                <q-btn
+                  outline
+                  color="primary"
+                  class="buy-button"
+                  label="Buy Now"
+                  size="sm"
+                  @click="buyNow(product, selectedProduct(product)?.id)"
+                />
+                <q-btn
+                  outline
+                  color="secondary"
+                  class="cart-button"
+                  label="Add to Cart"
+                  size="sm"
+                  @click="addToCart(product, selectedProduct(product)?.id)"
+                />
+              </div>
+            </q-card-section>
+          </q-card>
         </div>
-        <template v-slot:loading>
-          <div class="row justify-center q-my-md">
-            <q-spinner-dots color="primary" size="40px" />
-          </div>
-        </template>
-      </q-infinite-scroll>
+      </div>
     </div>
 
     <!-- Order Dialog -->
@@ -286,19 +279,8 @@ const Categories = computed(() => {
 const CategoryDetail = computed((): any => {
   return ProductStore.getCategoryDetail;
 });
-const hasMorePages = computed(() => {
-  // let products: any = ProductStore.NextPage;
-  if (ProductStore.NextPage) {
-    return true;
-  }
-  return false;
-});
-const currentPage = computed(() => {
-  let products: any = ProductStore.CurrentPage;
-  return products;
-});
 const filteredProducts = computed(() => {
-  let products: any = ProductStore.getProducts;
+  let products: any = ProductStore.getProducts?.results || [];
 
   // Search filter
   if (searchQuery.value) {
@@ -323,12 +305,7 @@ const filteredProducts = computed(() => {
 
   return products;
 });
-const onLoad = async (index: any, done: any) => {
-  console.log("calling on Load", index, done);
-  if (hasMorePages.value) {
-    await ProductStore.fetchProducts({ page: index + 1 });
-  }
-};
+
 // Methods
 const handleCategoryChange = async () => {
   await ProductStore.fetchProducts({
