@@ -537,7 +537,7 @@ const onCategoryChange = async (value: any) => {
 
     .image-container {
       .product-image {
-        height: 250px;
+        // height: 250px;
       }
     }
 

@@ -14,27 +14,24 @@ const router = createRouter({
           name: "landing-page",
           component: () => import("@/views/LandingPage.vue"),
           meta: {
-            title: "Modish Era - Fashion & Style Store",
+            title: "Modish Era - Affordable & Stylish Jewelry Store in Nepal",
             description:
-              "Your premier destination for fashion, style, and trendy clothing.",
+              "Shop affordable and trendy jewelry at Modish Era - Nepal's favorite fashion accessories brand.",
             sitelink: true,
+            priority: 1.0,
           },
         },
         {
           path: "/product",
           name: "product",
           component: () => import("@/views/ProductView.vue"),
-          // children: [
-          //   {
-          //     path: "",
-          //     component: () => import("@/views/ProductView.vue"),
-          //     meta: {
-          //       title: "Shop All Products - Modish Era",
-          //       description: "Browse our collection of trendy fashion items.",
-          //       sitelink: true,
-          //     },
-          //   },
-          // ],
+          meta: {
+            title: "Shop Jewelry & Accessories | Modish Era Nepal",
+            description:
+              "Browse our collection of trendy jewelry and fashion accessories. Find earrings, necklaces, rings and more.",
+            sitelink: true,
+            priority: 0.9,
+          },
         },
         // {
         //   path: "dashboard",
@@ -100,9 +97,11 @@ const router = createRouter({
 
 // Update page title and meta description
 router.beforeEach((to, from, next) => {
-  // document.title = to.meta?.title ?? 'Modish Era';
+  // Type assertion to handle the meta properties
+  document.title =
+    (to.meta?.title as string) ??
+    "Modish Era - Stylish Jewelry & Fashion in Nepal";
 
-  // Type the meta element correctly
   let metaDescription = document.querySelector(
     'meta[name="description"]'
   ) as HTMLMetaElement;
@@ -111,6 +110,9 @@ router.beforeEach((to, from, next) => {
     metaDescription.name = "description";
     document.head.appendChild(metaDescription);
   }
+  metaDescription.content =
+    (to.meta?.description as string) ??
+    "Shop affordable and trendy jewelry at Modish Era - Nepal's favorite fashion accessories brand.";
 
   next();
 });

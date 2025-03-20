@@ -914,7 +914,7 @@ const setupImageObserver = () => {
   transition: transform 0.3s ease;
   width: 260px;
   margin: 0 auto;
-  height: 550px; /* Add fixed height */
+  height: 600px;
   display: flex;
   flex-direction: column;
   will-change: transform;
@@ -924,20 +924,84 @@ const setupImageObserver = () => {
   transform: translateY(-5px);
 }
 
+.image-container {
+  flex: 0 0 300px;
+  width: 100%;
+  position: relative;
+  background-color: #f0f0f0;
+  overflow: hidden;
+  margin-bottom: 0;
+}
+
+.product-images-list {
+  flex: 0 0 60px;
+  display: flex;
+  gap: 8px;
+  padding: 5px 10px;
+  justify-content: center;
+  overflow-x: auto;
+  // background-color: #f8f8f8;
+  margin: 0;
+}
+
+.q-card-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 12px !important;
+  min-height: 230px;
+  overflow: hidden;
+}
+
 .product-title {
-  font-size: 1.1rem;
-  margin: 0.5rem 0;
+  font-size: 1rem;
+  line-height: 1.2;
+  margin: 0.25rem 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .product-category {
   color: #666;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
+  margin: 0.25rem 0;
 }
 
 .product-price {
+  margin: 0.5rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.price-container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.original-price {
+  text-decoration: line-through;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.final-price {
   font-weight: bold;
   color: #2c3e50;
-  margin: 0.5rem 0;
+  font-size: 1rem;
+}
+
+.discount-badge {
+  background-color: #ffd700;
+  color: #2c3e50;
+  padding: 5px 8px 3px 7px;
+  border-radius: 4px;
+  font-size: 0.8rem;
 }
 
 :deep(.carousel__viewport) {
@@ -949,7 +1013,7 @@ const setupImageObserver = () => {
   padding: 10px 15px;
   width: 260px !important;
   min-width: 260px;
-  min-height: 550px; /* Add minimum height */
+  min-height: 600px;
 }
 
 :deep(.carousel__track) {
@@ -1017,8 +1081,8 @@ const setupImageObserver = () => {
 }
 
 .product-image {
-  width: 100%;
-  height: auto;
+  // width: 100%;
+  height: 100%;
   max-width: 260px;
   max-height: 300px;
   object-fit: cover;
@@ -1035,22 +1099,14 @@ const setupImageObserver = () => {
   font-weight: bold;
 }
 
-.product-images-list {
-  display: flex;
-  gap: 8px;
-  padding: 10px;
-  justify-content: center;
-  overflow-x: auto;
-}
-
 .product-thumb-container {
-  width: 50px;
-  height: 50px;
+  width: 45px;
+  height: 45px;
   border: 2px solid transparent;
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.3s ease;
-  overflow: hidden; // Prevent thumbnail overflow
+  overflow: hidden;
 }
 
 .product-thumb-container:hover {
@@ -1068,7 +1124,6 @@ const setupImageObserver = () => {
   object-fit: cover;
 }
 
-/* Make thumbnails smaller on mobile */
 @media (max-width: 600px) {
   .product-thumb-container {
     width: 40px;
@@ -1076,56 +1131,18 @@ const setupImageObserver = () => {
   }
 }
 
-// Add optimized placeholder styles
 .image-placeholder {
   background-color: #f0f0f0;
   width: 100%;
   height: 100%;
 }
 
-// Optimize image container
-.image-container {
-  position: relative;
-  width: 260px;
-  height: 300px;
-  background-color: #f0f0f0;
-  overflow: hidden; // Prevent image overflow during loading
-}
-
-// Add content-visibility to improve rendering performance
 .section-container {
   content-visibility: auto;
   contain-intrinsic-size: 700px;
 }
 
-// Add will-change for smoother animations
 .carousel__track {
   will-change: transform;
-}
-
-.price-container {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.original-price {
-  text-decoration: line-through;
-  color: #666;
-  font-size: 0.9rem;
-}
-
-.final-price {
-  font-weight: bold;
-  color: #2c3e50;
-  font-size: 1rem;
-}
-
-.discount-badge {
-  background-color: #ffd700;
-  color: #2c3e50;
-  padding: 5px 8px 3px 7px;
-  border-radius: 4px;
-  font-size: 0.8rem;
 }
 </style>

@@ -140,20 +140,21 @@ const copyToClipboard = async (e: Event) => {
 const websiteStructuredData = computed(() => ({
   "@context": "https://schema.org",
   "@type": "WebSite",
-  name: "Modish Era", // Replace with your site name
-  url: "https://modishera.com", // Replace with your domain
+  name: "The Modish Era",
+  url: "https://themodishera.com",
   potentialAction: [
     {
       "@type": "SearchAction",
       target: {
         "@type": "EntryPoint",
-        urlTemplate: "https://modishera.com/search?q={search_term_string}",
+        urlTemplate:
+          "https://themodishera.com/product?search={search_term_string}",
       },
       "query-input": "required name=search_term_string",
     },
   ],
   sameAs: [
-    "https://www.facebook.com/profile.php?id=61556899834852", // Add your social media links
+    "https://www.facebook.com/profile.php?id=61556899834852",
     "https://www.instagram.com/themodish_era/",
   ],
 }));
@@ -165,11 +166,108 @@ const navigationStructuredData = computed(() => ({
   url: quickLinks.map((link) => getFullUrl(link.route)),
 }));
 
+const getBreadcrumbs = computed(() => {
+  const basePath = "https://themodishera.com";
+  const currentPath = $route.path;
+
+  // Always start with home
+  const breadcrumbs = [
+    {
+      "@type": "ListItem",
+      position: 1,
+      name: "Home",
+      item: basePath,
+    },
+  ];
+
+  // Add additional breadcrumbs based on current route
+  if (currentPath.startsWith("/product")) {
+    breadcrumbs.push({
+      "@type": "ListItem",
+      position: 2,
+      name: "Shop",
+      item: `${basePath}/product`,
+    });
+
+    // If it's a product detail page
+    if ($route.name === "product-detail") {
+      breadcrumbs.push({
+        "@type": "ListItem",
+        position: 3,
+        name: "Product Details", // Ideally, use actual product name here
+        item: `${basePath}${currentPath}`,
+      });
+    }
+  } else if (currentPath === "/about") {
+    breadcrumbs.push({
+      "@type": "ListItem",
+      position: 2,
+      name: "About Us",
+      item: `${basePath}/about`,
+    });
+  } else if (currentPath === "/faqs") {
+    breadcrumbs.push({
+      "@type": "ListItem",
+      position: 2,
+      name: "FAQs",
+      item: `${basePath}/faqs`,
+    });
+  } else if (currentPath === "/checkout") {
+    breadcrumbs.push({
+      "@type": "ListItem",
+      position: 2,
+      name: "Checkout",
+      item: `${basePath}/checkout`,
+    });
+  }
+
+  return breadcrumbs;
+});
+
+const breadcrumbStructuredData = computed(() => ({
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: getBreadcrumbs.value,
+}));
+
 // Helper function to get full URLs
 const getFullUrl = (route: string) => {
-  const baseUrl = "https://modishera.com"; // Replace with your domain
+  const baseUrl = "https://themodishera.com"; // Use consistent domain
   return route.startsWith("#") ? `${baseUrl}/${route}` : `${baseUrl}${route}`;
 };
+
+// Add a product ref with default values
+const product = ref({
+  id: "",
+  name: "",
+  images: [],
+  description: "",
+  sku: "",
+  price: 0,
+  inStock: false,
+});
+
+const productStructuredData = computed(() => ({
+  "@context": "https://schema.org",
+  "@type": "Product",
+  name: product.value.name,
+  image: product.value.images,
+  description: product.value.description,
+  sku: product.value.sku,
+  brand: {
+    "@type": "Brand",
+    name: "The Modish Era",
+  },
+  offers: {
+    "@type": "Offer",
+    price: product.value.price,
+    priceCurrency: "NPR",
+    availability: product.value.inStock
+      ? "https://schema.org/InStock"
+      : "https://schema.org/OutOfStock",
+    url: `https://themodishera.com/product-detail/${product.value.id}`,
+  },
+}));
 
 useMeta({
   title: "Modish Era - Stylish Gold Plated Jewelry & Women's Fashion in Nepal",
@@ -194,15 +292,32 @@ useMeta({
       type: "application/ld+json",
       innerHTML: JSON.stringify(navigationStructuredData.value),
     },
+    "breadcrumb-schema": {
+      type: "application/ld+json",
+      innerHTML: JSON.stringify(breadcrumbStructuredData.value),
+    },
+    ...($route.name === "product-detail"
+      ? {
+          "product-schema": {
+            type: "application/ld+json",
+            innerHTML: JSON.stringify(productStructuredData.value),
+          },
+        }
+      : {}),
   },
 });
 
-// Add these new refs
+// Update these refs
 const showWelcome = ref(true);
+const showDiscount = ref(false);
 const displayText = ref("");
-const fullText = "Welcome to The Modish Era";
+const messages = [
+  "Welcome to The Modish Era",
+  "🎉 Enjoy 20% OFF on All Products! 🎉",
+];
 
-const typeWriter = async (text: string, speed = 50) => {
+const typeWriter = async (text: string, speed = 50): Promise<void> => {
+  displayText.value = "";
   for (let i = 0; i <= text.length; i++) {
     displayText.value = text.substring(0, i);
     await new Promise((resolve) => setTimeout(resolve, speed));
@@ -210,17 +325,38 @@ const typeWriter = async (text: string, speed = 50) => {
 };
 
 onMounted(async () => {
-  await typeWriter(fullText);
-  // Hide after 4 seconds
-  setTimeout(() => {
-    showWelcome.value = false;
-  }, 4000);
+  // Show welcome message
+  await typeWriter(messages[0]);
+  await new Promise((resolve) => setTimeout(resolve, 2000)); // Show welcome for 2s
+
+  // Transition to discount message
+  showDiscount.value = true;
+  await typeWriter(messages[1]);
+});
+
+// Add a computed property to check if we're on the landing page
+const isLandingPage = computed(() => {
+  return $route.name === "landing-page";
 });
 </script>
 
 <template>
   <header role="banner">
     <q-header :reveal="true">
+      <!-- Only show welcome banner on landing page -->
+      <div v-if="isLandingPage" class="welcome-banner-container">
+        <div v-show="showWelcome" class="welcome-message text-center">
+          <span class="typewriter" :class="{ 'discount-text': showDiscount }">
+            {{ displayText }}
+          </span>
+          <q-icon
+            :name="showDiscount ? 'local_offer' : 'sentiment_very_satisfied'"
+            size="sm"
+            class="q-ml-sm"
+          />
+        </div>
+      </div>
+
       <q-toolbar
         class="container-width"
         :class="{
@@ -383,12 +519,6 @@ onMounted(async () => {
           </div>
         </div>
       </q-toolbar>
-
-      <!-- Welcome Message -->
-      <div v-if="showWelcome" class="welcome-message text-center">
-        <span class="typewriter">{{ displayText }}</span>
-        <q-icon name="sentiment_very_satisfied" size="sm" class="q-ml-sm" />
-      </div>
     </q-header>
   </header>
 </template>
@@ -549,12 +679,26 @@ onMounted(async () => {
   }
 }
 
-.welcome-message {
+.welcome-banner-container {
+  height: 40px; /* Fixed height to prevent layout shift */
+  position: relative;
   background: linear-gradient(to right, #8f0005, #666);
+}
+
+.welcome-message {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
   color: white;
   padding: 0.5rem;
   font-size: 1rem;
-  animation: fadeOut 0.5s ease-in-out 3.5s forwards;
+  opacity: 1;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.welcome-message[v-show="false"] {
+  opacity: 0;
 }
 
 .typewriter {
@@ -562,13 +706,10 @@ onMounted(async () => {
   white-space: nowrap;
 }
 
-@keyframes fadeOut {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-  }
+.discount-text {
+  color: #ffd700;
+  font-weight: bold;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 /* Add these styles to maintain aspect ratio and prevent layout shift */
