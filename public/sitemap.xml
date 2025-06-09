@@ -39,4 +39,11 @@
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
+    <!-- FAQ Detail Pages -->
+    <url>
+        <loc>https://themodishera.com/faqs/1/what-is-gold-plated-jewelry</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.5</priority>
+    </url>
+    <!-- Add more FAQ URLs as they are created -->
 </urlset>

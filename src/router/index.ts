@@ -98,6 +98,18 @@ const router = createRouter({
             priority: 0.6,
           },
         },
+        {
+          path: "/faqs/:questionId/:questionSlug",
+          name: "faq-detail",
+          component: () => import("@/views/FAQDetailPage.vue"),
+          meta: {
+            title: "FAQ | Modish Era Nepal",
+            description:
+              "Detailed answer to your question about Modish Era's products and services.",
+            sitelink: true,
+            priority: 0.5,
+          },
+        },
       ],
     },
     // {

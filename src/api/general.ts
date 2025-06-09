@@ -6,8 +6,12 @@ export default new (class GENERALAPI {
     const response = await postAPI(Action.BulkOrder, data);
     return response;
   }
-  public async fetchFAQs() {
-    const response = await getAPI(Action.FAQs);
+  public async fetchFAQs(id: any = null) {
+    var params = "";
+    if (id) {
+      params = id;
+    }
+    const response = await getAPI(Action.FAQs, params);
     return response;
   }
 })();
