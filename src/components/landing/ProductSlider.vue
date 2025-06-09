@@ -54,7 +54,7 @@
                 v-if="index === 0"
                 :ratio="1"
                 class="product-image cursor-pointer"
-                @click="goToProductDetail(item.id)"
+                @click="goToProductDetail(item.id, item.name)"
                 width="260"
                 height="300"
                 :placeholder-src="placeholderImage"
@@ -77,7 +77,7 @@
                 v-else
                 :ratio="1"
                 class="product-image cursor-pointer"
-                @click="goToProductDetail(item.id)"
+                @click="goToProductDetail(item.id, item.name)"
                 width="260"
                 height="300"
                 :placeholder-src="placeholderImage"
@@ -119,13 +119,13 @@
             <q-card-section>
               <div
                 class="text-subtitle2 product-category cursor-pointer"
-                @click="goToProductDetail(item.id)"
+                @click="goToProductDetail(item.id, item.name)"
               >
                 #{{ selectedProduct(item)?.id }}
               </div>
               <div
                 class="text-h6 product-title cursor-pointer"
-                @click="goToProductDetail(item.id)"
+                @click="goToProductDetail(item.id, item.name)"
               >
                 {{ item.name }}
               </div>
@@ -238,7 +238,7 @@
                 v-if="index === 0"
                 :ratio="1"
                 class="product-image cursor-pointer"
-                @click="goToProductDetail(item.id)"
+                @click="goToProductDetail(item.id, item.name)"
                 width="260"
                 height="300"
                 :placeholder-src="placeholderImage"
@@ -261,7 +261,7 @@
                 v-else
                 :ratio="1"
                 class="product-image cursor-pointer"
-                @click="goToProductDetail(item.id)"
+                @click="goToProductDetail(item.id, item.name)"
                 width="260"
                 height="300"
                 :placeholder-src="placeholderImage"
@@ -303,13 +303,13 @@
             <q-card-section>
               <div
                 class="text-subtitle2 product-category cursor-pointer"
-                @click="goToProductDetail(item.id)"
+                @click="goToProductDetail(item.id, item.name)"
               >
                 #{{ item.id }}
               </div>
               <div
                 class="text-h6 product-title cursor-pointer"
-                @click="goToProductDetail(item.id)"
+                @click="goToProductDetail(item.id, item.name)"
               >
                 {{ item.name }}
               </div>
@@ -422,7 +422,7 @@
                 v-if="index === 0"
                 :ratio="1"
                 class="product-image cursor-pointer"
-                @click="goToProductDetail(item.id)"
+                @click="goToProductDetail(item.id, item.name)"
                 width="260"
                 height="300"
                 :placeholder-src="placeholderImage"
@@ -445,7 +445,7 @@
                 v-else
                 :ratio="1"
                 class="product-image cursor-pointer"
-                @click="goToProductDetail(item.id)"
+                @click="goToProductDetail(item.id, item.name)"
                 width="260"
                 height="300"
                 :placeholder-src="placeholderImage"
@@ -487,13 +487,13 @@
             <q-card-section>
               <div
                 class="text-subtitle2 product-category cursor-pointer"
-                @click="goToProductDetail(item.id)"
+                @click="goToProductDetail(item.id, item.name)"
               >
                 #{{ item.id }}
               </div>
               <div
                 class="text-h6 product-title cursor-pointer"
-                @click="goToProductDetail(item.id)"
+                @click="goToProductDetail(item.id, item.name)"
               >
                 {{ item.name }}
               </div>
@@ -841,10 +841,15 @@ const goToCheckout = (productId: any) => {
   });
 };
 
-const goToProductDetail = (productId: number) => {
+const goToProductDetail = (productId: number, productName: string) => {
+  const formattedName = productName
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-") // Replace any non-alphanumeric characters with hyphens
+    .replace(/^-+|-+$/g, ""); // Remove leading and trailing hyphens
+
   router.push({
     name: "product-detail",
-    params: { productId: productId },
+    params: { productId: productId, productName: formattedName },
   });
 };
 

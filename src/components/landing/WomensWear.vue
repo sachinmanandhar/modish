@@ -21,7 +21,13 @@
       <!-- Show actual items when available -->
       <Slide v-else v-for="item in items" :key="item.name">
         <router-link
-          :to="{ name: 'product', query: { categoryId: item.category } }"
+          :to="{
+            name: 'product-category',
+            params: {
+              categoryId: item.category,
+              categoryName: formattedName(item.category_name),
+            },
+          }"
           class="card"
         >
           <div class="card-inner">
@@ -84,6 +90,12 @@ const breakpoints = {
     autoplay: 3000,
     pauseAutoplayOnHover: true,
   },
+};
+const formattedName = (productName: string) => {
+  return productName
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-") // Replace any non-alphanumeric characters with hyphens
+    .replace(/^-+|-+$/g, ""); // Remove leading and trailing hyphens
 };
 
 onBeforeMount(async () => {

@@ -388,8 +388,9 @@ const goToProductDetail = (productId: number, productName: string) => {
 onBeforeMount(async () => {
   isLoading.value = false;
   ProductStore.ProductsList = [];
-  await ProductStore.fetchCategories();
-  const categoryId = $route.query.categoryId as string;
+  // await ProductStore.fetchCategories();
+  const categoryId = $route.params.categoryId;
+  // const categoryId = $route.query.categoryId as string;
   if (categoryId && categoryId !== "0") {
     await ProductStore.fetchCategoryDetail(categoryId);
     await ProductStore.fetchProducts({

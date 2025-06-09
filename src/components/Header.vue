@@ -313,7 +313,7 @@ const showDiscount = ref(false);
 const displayText = ref("");
 const messages = [
   "Welcome to The Modish Era",
-  "🎉 Enjoy 20% OFF on All Products! 🎉",
+  // "🎉 Enjoy 20% OFF on All Products! 🎉",
 ];
 
 const typeWriter = async (text: string, speed = 50): Promise<void> => {
@@ -344,7 +344,7 @@ const isLandingPage = computed(() => {
   <header role="banner">
     <q-header :reveal="true">
       <!-- Only show welcome banner on landing page -->
-      <div v-if="isLandingPage" class="welcome-banner-container">
+      <!-- <div v-if="isLandingPage" class="welcome-banner-container">
         <div v-show="showWelcome" class="welcome-message text-center">
           <span class="typewriter" :class="{ 'discount-text': showDiscount }">
             {{ displayText }}
@@ -355,7 +355,7 @@ const isLandingPage = computed(() => {
             class="q-ml-sm"
           />
         </div>
-      </div>
+      </div> -->
 
       <q-toolbar
         class="container-width"

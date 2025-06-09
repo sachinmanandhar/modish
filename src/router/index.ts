@@ -33,31 +33,70 @@ const router = createRouter({
             priority: 0.9,
           },
         },
+        {
+          path: "/product-category/:categoryName/:categoryId",
+          name: "product-category",
+          component: () => import("@/views/ProductCategory.vue"),
+          meta: {
+            title: "Shop {categoryName} Collection | Modish Era Nepal",
+            description:
+              "Discover our exclusive {categoryName} collection at Modish Era. Browse through our carefully curated selection of trendy jewelry and fashion accessories.",
+            sitelink: true,
+            priority: 0.9,
+          },
+        },
         // {
         //   path: "dashboard",
         //   name: "dashboard",
         //   component: () => import("@/views/DashboardView.vue"),
         // },
         {
-          path: "/product-detail/:productId",
+          path: "/product-detail/:productName/:productId",
           name: "product-detail",
           component: () => import("@/views/ProductDetailPage.vue"),
+          meta: {
+            title: "{productName} | Modish Era Nepal",
+            description:
+              "Explore {productName} at Modish Era. View detailed specifications, high-quality images, and add this beautiful piece to your collection.",
+            sitelink: true,
+            priority: 0.8,
+          },
         },
         {
           path: "/about",
           name: "about",
           component: () => import("@/views/AboutPage.vue"),
+          meta: {
+            title: "About Modish Era | Nepal's Fashion Jewelry Brand",
+            description:
+              "Learn about Modish Era's journey, our commitment to quality, and how we're bringing affordable fashion jewelry to Nepal.",
+            sitelink: true,
+            priority: 0.7,
+          },
         },
-
         {
           path: "/checkout",
           name: "checkout",
           component: () => import("@/views/CheckoutView.vue"),
+          meta: {
+            title: "Checkout | Modish Era Nepal",
+            description:
+              "Complete your purchase securely at Modish Era. Fast and reliable checkout process for your jewelry and accessories.",
+            sitelink: false,
+            priority: 0.5,
+          },
         },
         {
           path: "/faqs",
           name: "faqs",
           component: () => import("@/views/FAQsPage.vue"),
+          meta: {
+            title: "Frequently Asked Questions | Modish Era Nepal",
+            description:
+              "Find answers to common questions about our products, shipping, returns, and more at Modish Era.",
+            sitelink: true,
+            priority: 0.6,
+          },
         },
       ],
     },

@@ -135,18 +135,19 @@ const email = ref("");
 const phoneNumber = "+9779860913842";
 
 const quickLinks = [
-  { title: "Home", route: "/#home" },
-  { title: "Shop", route: "/#shop" },
-  { title: "Sale", route: "/#sale" },
-  { title: "About Us", route: "/#about" },
-  { title: "Contact", route: "/contact" },
+  { title: "Home", route: "" },
+  { title: "Shop", route: "/product" },
+  // { title: "Sale", route: "/#sale" },
+  { title: "About Us", route: "/about" },
+  // { title: "Contact", route: "/contact" },
 ];
 
 const bottomLinks = [
-  { title: "Privacy Policy", route: "/privacy" },
-  { title: "Terms of Service", route: "/terms" },
-  { title: "Shipping Info", route: "/shipping" },
-  { title: "Returns", route: "/returns" },
+  { title: "Home", route: "" },
+  { title: "Shop", route: "/product" },
+  // { title: "Sale", route: "/#sale" },
+  { title: "About Us", route: "/about" },
+  // { title: "Contact", route: "/contact" },
 ];
 
 const subscribeNewsletter = () => {
