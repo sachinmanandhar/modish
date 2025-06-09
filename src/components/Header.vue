@@ -313,7 +313,7 @@ const showDiscount = ref(false);
 const displayText = ref("");
 const messages = [
   "Welcome to The Modish Era",
-  // "🎉 Enjoy 20% OFF on All Products! 🎉",
+  "🎉 Enjoy 15% OFF on different Products! 🎉",
 ];
 
 const typeWriter = async (text: string, speed = 50): Promise<void> => {
@@ -338,13 +338,25 @@ onMounted(async () => {
 const isLandingPage = computed(() => {
   return $route.name === "landing-page";
 });
+
+const handleNavigation = (route: string) => {
+  if (route.startsWith("#")) {
+    scrollToSection(route);
+  } else {
+    $router.push(route);
+  }
+  // Close sidebar after navigation
+  if (sidebarOpen.value) {
+    closeSidebar(null);
+  }
+};
 </script>
 
 <template>
   <header role="banner">
     <q-header :reveal="true">
       <!-- Only show welcome banner on landing page -->
-      <!-- <div v-if="isLandingPage" class="welcome-banner-container">
+      <div v-if="isLandingPage" class="welcome-banner-container">
         <div v-show="showWelcome" class="welcome-message text-center">
           <span class="typewriter" :class="{ 'discount-text': showDiscount }">
             {{ displayText }}
@@ -355,7 +367,7 @@ const isLandingPage = computed(() => {
             class="q-ml-sm"
           />
         </div>
-      </div> -->
+      </div>
 
       <q-toolbar
         class="container-width"
@@ -455,11 +467,7 @@ const isLandingPage = computed(() => {
                 flat
                 no-caps
                 :label="link.title"
-                @click="
-                  link.route.startsWith('#')
-                    ? scrollToSection(link.route)
-                    : $router.push(link.route)
-                "
+                @click="handleNavigation(link.route)"
                 class="quick-link-btn"
                 :aria-label="`Navigate to ${link.title}`"
               >

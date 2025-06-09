@@ -89,87 +89,86 @@
               :key="product.id"
               class="col-12 col-sm-6 col-md-4 col-lg-3"
             >
-              <q-card flat bordered class="product-card">
-                <div class="image-container">
+              <q-card flat bordered class="product-view-card">
+                <div class="product-view-image-container">
                   <q-img
                     :src="
                       selectedProduct(product)?.image_medium_url ||
                       selectedProduct(product)?.image
                     "
                     :ratio="1"
-                    class="product-image"
+                    class="product-view-image"
                     @click="goToProductDetail(product.id, product.name)"
                     loading="lazy"
                     :placeholder-src="placeholderImage"
                   >
                     <template v-slot:loading>
-                      <div class="image-placeholder" />
+                      <div class="product-view-placeholder" />
                     </template>
                   </q-img>
                 </div>
 
-                <!-- Add Product images selection -->
-                <div class="product-images-list">
+                <div class="product-view-info">
+                  <span
+                    class="text-subtitle2 product-view-title cursor-pointer"
+                    @click="goToProductDetail(product.id, product.name)"
+                  >
+                    {{ product.name }}
+                  </span>
+                  <div class="product-view-price-container">
+                    <template v-if="product.discount_percentage > 0">
+                      <span class="product-view-original-price"
+                        >NPR {{ product.price }}</span
+                      >
+                      <span class="product-view-final-price"
+                        >NPR {{ product.final_price }}</span
+                      >
+                      <q-badge
+                        color="negative"
+                        class="product-view-discount-badge text-white"
+                      >
+                        {{ product.discount_percentage }}% OFF
+                      </q-badge>
+                    </template>
+                    <template v-else>
+                      <span class="product-view-final-price"
+                        >NPR {{ product.final_price }}</span
+                      >
+                    </template>
+                  </div>
+                </div>
+
+                <div class="product-view-variants">
                   <div
                     v-for="variant in product.products"
                     :key="variant.id"
-                    class="product-thumb-container"
+                    class="product-view-thumb-container"
                     :class="{
-                      selected: selectedProductIds[product.id] === variant.id,
+                      'product-view-thumb-selected':
+                        selectedProductIds[product.id] === variant.id,
                     }"
                     @click="selectProduct(product.id, variant.id)"
                   >
                     <q-img
                       :src="variant.image_thumbnail_url || variant.image"
                       :ratio="1"
-                      class="product-thumb"
-                      width="50"
-                      height="50"
+                      class="product-view-thumb"
                       loading="lazy"
                       :placeholder-src="placeholderImage"
                     >
                       <template v-slot:loading>
-                        <div class="image-placeholder" />
+                        <div class="product-view-placeholder" />
                       </template>
                     </q-img>
                   </div>
                 </div>
 
-                <q-card-section class="q-pa-sm text-center">
-                  <div class="product-info">
-                    <span
-                      class="text-subtitle2 product-title cursor-pointer"
-                      @click="goToProductDetail(product.id, product.name)"
-                    >
-                      {{ product.name }}
-                    </span>
-                    <div class="price-container">
-                      <template v-if="product.discount_percentage > 0">
-                        <span class="original-price"
-                          >NPR {{ product.price }}</span
-                        >
-                        <span class="final-price"
-                          >NPR {{ product.final_price }}</span
-                        >
-                        <q-badge
-                          color="negative"
-                          class="discount-badge text-white"
-                        >
-                          {{ product.discount_percentage }}% OFF
-                        </q-badge>
-                      </template>
-                      <template v-else>
-                        <span class="final-price"
-                          >NPR {{ product.final_price }}</span
-                        >
-                      </template>
-                    </div>
-                  </div>
-                  <div class="row q-gutter-sm justify-center q-mt-sm">
+                <div class="product-view-actions">
+                  <div class="row q-gutter-sm justify-center">
                     <q-btn
                       outline
                       color="primary"
-                      class="buy-button"
+                      class="product-view-buy-button"
                       label="Buy Now"
                       size="sm"
                       @click="buyNow(product, selectedProduct(product)?.id)"
@@ -177,13 +176,13 @@
                     <q-btn
                       outline
                       color="secondary"
-                      class="cart-button"
+                      class="product-view-cart-button"
                       label="Add to Cart"
                       size="sm"
                       @click="addToCart(product, selectedProduct(product)?.id)"
                     />
                   </div>
-                </q-card-section>
+                </div>
               </q-card>
             </div>
           </div>
@@ -467,90 +466,168 @@ const onCategoryChange = async (value: any) => {
   margin-bottom: 1rem;
 }
 
-.product-card {
+.product-view-card {
   height: 100%;
   transition: all 0.3s ease;
-  max-width: 300px;
-  margin: 0 auto;
-  background: white;
-  border: 1px solid #eee;
+  background: #fff;
+  border: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
 
   &:hover {
-    border-color: transparent;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
 
-    .product-image {
-      transform: scale(1.05);
+    .product-view-image {
+      transform: scale(1.1);
     }
-  }
-
-  .image-container {
-    position: relative;
-    overflow: hidden;
-
-    .product-image {
-      transition: transform 0.3s ease;
-      height: 300px;
-      object-fit: cover;
-      cursor: pointer;
-    }
-  }
-
-  .product-info {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 4px;
-  }
-
-  .product-title {
-    flex: 1;
-    text-align: left;
-    margin-right: 8px;
-  }
-
-  .buy-button {
-    min-width: 120px;
-    text-transform: none;
-    font-weight: 400;
   }
 }
 
-// Responsive adjustments
+.product-view-image-container {
+  position: relative;
+  background-color: #f8f8f8;
+  overflow: hidden;
+  aspect-ratio: 1;
+  width: 100%;
+}
+
+.product-view-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.product-view-info {
+  padding: 1rem;
+  text-align: center;
+  background: white;
+}
+
+.product-view-title {
+  font-family: "Playfair Display", serif;
+  font-size: 1.1rem;
+  line-height: 1.4;
+  margin: 0.5rem 0;
+  color: #2c3e50;
+  display: block;
+}
+
+.product-view-price-container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 0.5rem 0;
+
+  .product-view-original-price {
+    text-decoration: line-through;
+    color: #666;
+    font-size: 0.9rem;
+  }
+
+  .product-view-final-price {
+    font-weight: bold;
+    color: #2c3e50;
+    font-size: 1.2rem;
+    font-family: "Playfair Display", serif;
+  }
+
+  .product-view-discount-badge {
+    background-color: #ffd700;
+    color: #2c3e50;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
+}
+
+.product-view-variants {
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  justify-content: center;
+  background: #f8f8f8;
+  border-top: 1px solid #eee;
+  border-bottom: 1px solid #eee;
+}
+
+.product-view-thumb-container {
+  width: 50px;
+  height: 50px;
+  border: 2px solid transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  overflow: hidden;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+
+  &.product-view-thumb-selected {
+    border-color: #1976d2;
+  }
+}
+
+.product-view-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.product-view-actions {
+  padding: 1rem;
+  background: white;
+}
+
+.product-view-buy-button,
+.product-view-cart-button {
+  min-width: 100px;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0.5px;
+}
+
+.product-view-placeholder {
+  background-color: #f0f0f0;
+  width: 100%;
+  height: 100%;
+}
+
 @media (max-width: 599px) {
-  .hero-section {
-    padding: 2rem 1rem !important;
-
-    h1 {
-      font-size: 2rem;
-    }
-
-    .description {
-      font-size: 1rem;
-      line-height: 1.6;
-    }
+  .product-view-card {
+    margin-bottom: 0.5rem;
   }
 
-  .filter-section {
-    padding: 0.75rem;
+  .product-view-thumb-container {
+    width: 45px;
+    height: 45px;
   }
 
-  .product-card {
-    max-width: 100%;
+  .product-view-title {
+    font-size: 1rem;
+  }
 
-    .image-container {
-      .product-image {
-        // height: 250px;
-      }
+  .product-view-price-container {
+    .product-view-final-price {
+      font-size: 1.1rem;
     }
+  }
+}
 
-    .product-title {
-      font-size: 0.95rem;
-    }
+// Update the row and column classes for better grid layout
+.row.q-col-gutter-md {
+  margin: -0.5rem;
 
-    .product-price {
-      font-size: 1rem;
-    }
+  > [class*="col-"] {
+    padding: 0.5rem;
   }
 }
 
@@ -596,77 +673,9 @@ const onCategoryChange = async (value: any) => {
   }
 }
 
-.product-images-list {
-  display: flex;
-  gap: 8px;
-  padding: 10px;
-  justify-content: center;
-  overflow-x: auto;
-}
-
-.product-thumb-container {
-  width: 50px;
-  height: 50px;
-  border: 2px solid transparent;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-
-  &:hover {
-    transform: scale(1.1);
-  }
-
-  &.selected {
-    border-color: #1976d2;
-  }
-}
-
-.product-thumb {
-  border-radius: 2px;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-@media (max-width: 600px) {
-  .product-thumb-container {
-    width: 40px;
-    height: 40px;
-  }
-}
-
-// Add placeholder styles if not already present
-.image-placeholder {
-  background-color: #f0f0f0;
-  width: 100%;
-  height: 100%;
-}
-
 .products-container {
   padding: 16px;
   border-radius: 8px;
   background: #fff;
-}
-
-.price-container {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-
-  .original-price {
-    text-decoration: line-through;
-    color: #666;
-    font-size: 0.9em;
-  }
-
-  .final-price {
-    color: #1976d2;
-    font-weight: bold;
-  }
-
-  .discount-badge {
-    font-size: 0.8em;
-    padding: 2px 6px;
-  }
 }
 </style>

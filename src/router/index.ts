@@ -148,10 +148,39 @@ const router = createRouter({
 
 // Update page title and meta description
 router.beforeEach((to, from, next) => {
-  // Type assertion to handle the meta properties
-  document.title =
+  // Get the base title from meta
+  let title =
     (to.meta?.title as string) ??
     "Modish Era - Stylish Jewelry & Fashion in Nepal";
+
+  // Replace dynamic parameters in title
+  if (to.params.productName) {
+    title = title.replace("{productName}", to.params.productName as string);
+  }
+  if (to.params.categoryName) {
+    title = title.replace("{categoryName}", to.params.categoryName as string);
+  }
+
+  document.title = title;
+
+  // Get the base description from meta
+  let description =
+    (to.meta?.description as string) ??
+    "Shop affordable and trendy jewelry at Modish Era - Nepal's favorite fashion accessories brand.";
+
+  // Replace dynamic parameters in description
+  if (to.params.productName) {
+    description = description.replace(
+      "{productName}",
+      to.params.productName as string
+    );
+  }
+  if (to.params.categoryName) {
+    description = description.replace(
+      "{categoryName}",
+      to.params.categoryName as string
+    );
+  }
 
   let metaDescription = document.querySelector(
     'meta[name="description"]'
@@ -161,9 +190,7 @@ router.beforeEach((to, from, next) => {
     metaDescription.name = "description";
     document.head.appendChild(metaDescription);
   }
-  metaDescription.content =
-    (to.meta?.description as string) ??
-    "Shop affordable and trendy jewelry at Modish Era - Nepal's favorite fashion accessories brand.";
+  metaDescription.content = description;
 
   next();
 });

@@ -1,6 +1,6 @@
 <template>
   <!-- ViewedProducts    SoldProducts -->
-  <div class="product-slider q-pa-md">
+  <div class="product-grid q-pa-md">
     <!-- Latest Arrivals Section -->
     <div class="section-container">
       <div class="header-container">
@@ -15,124 +15,62 @@
           map-options
           emit-value
         /> -->
-        <h4 class="title text-bold">Latest Arrivals</h4>
+        <div class="title-wrapper">
+          <h4 class="title text-bold">Latest Arrivals</h4>
+          <p class="subtitle">
+            Discover our newest collection of exquisite pieces, crafted with
+            precision and passion
+          </p>
+        </div>
       </div>
-      <Carousel
-        :wrap-around="true"
-        :breakpoints="breakpoints"
-        :pagination-enabled="true"
-        :pagination-padding="4"
-        :items-to-show="1"
-        :touch-drag="false"
-      >
-        <Slide v-if="NewProducts.length === 0">
-          <q-card class="product-card">
+      <div class="products-grid">
+        <div v-if="NewProducts.length === 0" class="products-grid">
+          <q-card v-for="i in 6" :key="i" class="product-card">
             <div class="image-container">
               <q-skeleton type="rect" class="product-image" height="300px" />
             </div>
-            <q-card-section>
-              <q-skeleton type="text" class="text-subtitle2" />
-              <q-skeleton type="text" class="text-h6 q-my-sm" />
-              <q-skeleton type="text" class="text-subtitle2" />
-              <q-skeleton type="text" class="text-h6 q-my-sm" />
-              <q-skeleton type="rect" class="q-mt-sm" height="40px" />
-            </q-card-section>
           </q-card>
-        </Slide>
-        <Slide v-else v-for="(item, index) in NewProducts" :key="item.id">
-          <q-card class="product-card">
-            <div class="image-container">
-              <q-img
-                :src="
-                  selectedProduct(item)?.image_medium_url ||
-                  selectedProduct(item)?.image
-                "
-                :alt="item.name"
-                :title="item.name"
-                fetchpriority="high"
-                loading="eager"
-                v-if="index === 0"
-                :ratio="1"
-                class="product-image cursor-pointer"
-                @click="goToProductDetail(item.id, item.name)"
-                width="260"
-                height="300"
-                :placeholder-src="placeholderImage"
-              >
-                <template v-slot:loading>
-                  <div class="image-placeholder" />
-                </template>
-                <div v-if="!item.is_in_stock" class="out-of-stock-badge">
-                  Out of Stock
-                </div>
-              </q-img>
-              <q-img
-                :src="
-                  selectedProduct(item)?.image_medium_url ||
-                  selectedProduct(item)?.image
-                "
-                :alt="item.name"
-                :title="item.name"
-                loading="lazy"
-                v-else
-                :ratio="1"
-                class="product-image cursor-pointer"
-                @click="goToProductDetail(item.id, item.name)"
-                width="260"
-                height="300"
-                :placeholder-src="placeholderImage"
-              >
-                <template v-slot:loading>
-                  <div class="image-placeholder" />
-                </template>
-                <div v-if="!item.is_in_stock" class="out-of-stock-badge">
-                  Out of Stock
-                </div>
-              </q-img>
-            </div>
-
-            <!-- Product images selection -->
-            <div class="product-images-list">
-              <div
-                v-for="product in item.products"
-                :key="product.id"
-                class="product-thumb-container"
-                :class="{
-                  selected: selectedProductIds[item.id] === product.id,
-                }"
-                @click="selectProduct(item.id, product.id)"
-              >
-                <q-img
-                  :src="product.image_thumbnail_url || product.image"
-                  :alt="`${item.name} - Variant ${product.id}`"
-                  :title="`${item.name} - Variant ${product.id}`"
-                  :ratio="1"
-                  class="product-thumb"
-                  width="50"
-                  height="50"
-                  loading="lazy"
-                  :placeholder-src="placeholderImage"
-                />
+        </div>
+        <q-card
+          v-else
+          v-for="(item, index) in NewProducts.slice(0, 6)"
+          :key="item.id"
+          class="product-card"
+          @click="goToProductDetail(item.id, item.name)"
+        >
+          <div class="image-container">
+            <q-img
+              :src="
+                selectedProduct(item)?.image_medium_url ||
+                selectedProduct(item)?.image
+              "
+              :alt="item.name"
+              :title="item.name"
+              :ratio="1"
+              class="product-image"
+              :placeholder-src="placeholderImage"
+            >
+              <template v-slot:loading>
+                <div class="image-placeholder" />
+              </template>
+              <div v-if="!item.is_in_stock" class="out-of-stock-badge">
+                Out of Stock
               </div>
-            </div>
+            </q-img>
+          </div>
 
-            <q-card-section>
-              <div
-                class="text-subtitle2 product-category cursor-pointer"
-                @click="goToProductDetail(item.id, item.name)"
-              >
+          <div class="product-overlay">
+            <div class="product-info">
+              <div class="text-subtitle2 product-category">
                 #{{ selectedProduct(item)?.id }}
               </div>
-              <div
-                class="text-h6 product-title cursor-pointer"
-                @click="goToProductDetail(item.id, item.name)"
-              >
+              <div class="text-h6 product-title">
                 {{ item.name }}
               </div>
               <div class="text-subtitle2 product-category">
                 {{ item.category }}
               </div>
-              <div class="text-h6 product-price">
+              <div class="product-price">
                 <div class="price-container">
                   <template v-if="item.discount_percentage > 0">
                     <span class="original-price">NRS {{ item.price }}</span>
@@ -155,32 +93,40 @@
                   </q-badge>
                 </div>
               </div>
-              <div class="row q-gutter-sm justify-center">
+              <div class="product-actions">
                 <q-btn
                   color="primary"
                   class="q-mt-sm"
                   label="Add to Cart"
                   style="width: 100%"
-                  @click="addToCart(item, selectedProduct(item)?.id)"
+                  @click.stop="addToCart(item, selectedProduct(item)?.id)"
                   :disable="!item.is_in_stock"
                 />
-                <!-- <q-btn 
-                outline
-                  color="primary" 
-                  class="q-mt-sm"
-                  label="Checkout"
-                  @click="goToCheckout(selectedProduct(item)?.id)"
-                /> -->
               </div>
-            </q-card-section>
-          </q-card>
-        </Slide>
+            </div>
+          </div>
 
-        <template #addons>
-          <Navigation />
-          <Pagination :page-count="5" class="hide-on-mobile" />
-        </template>
-      </Carousel>
+          <div class="product-images-list" @click.stop>
+            <div
+              v-for="product in item.products"
+              :key="product.id"
+              class="product-thumb-container"
+              :class="{ selected: selectedProductIds[item.id] === product.id }"
+              @click="selectProduct(item.id, product.id)"
+            >
+              <q-img
+                :src="product.image_thumbnail_url || product.image"
+                :alt="`${item.name} - Variant ${product.id}`"
+                :title="`${item.name} - Variant ${product.id}`"
+                :ratio="1"
+                class="product-thumb"
+                loading="lazy"
+                :placeholder-src="placeholderImage"
+              />
+            </div>
+          </div>
+        </q-card>
+      </div>
     </div>
 
     <!-- Trending Now Section -->
@@ -197,126 +143,62 @@
           map-options
           emit-value
         /> -->
-        <h4 class="title text-bold">Trending Now</h4>
+        <div class="title-wrapper">
+          <h4 class="title text-bold">Trending Now</h4>
+          <p class="subtitle">
+            Explore our most admired designs, capturing the essence of
+            contemporary elegance
+          </p>
+        </div>
         <!-- {{ Categories }} -->
       </div>
 
-      <Carousel
-        :wrap-around="true"
-        :breakpoints="breakpoints"
-        :pagination-enabled="true"
-        :pagination-padding="4"
-        :items-to-show="1"
-        :touch-drag="false"
-      >
-        <Slide v-if="ViewedProducts.length === 0">
-          <q-card class="product-card">
+      <div class="products-grid">
+        <div v-if="ViewedProducts.length === 0" class="products-grid">
+          <q-card v-for="i in 6" :key="i" class="product-card">
             <div class="image-container">
               <q-skeleton type="rect" class="product-image" height="300px" />
             </div>
-            <q-card-section>
-              <q-skeleton type="text" class="text-subtitle2" />
-              <q-skeleton type="text" class="text-h6 q-my-sm" />
-              <q-skeleton type="text" class="text-subtitle2" />
-              <q-skeleton type="text" class="text-h6 q-my-sm" />
-              <q-skeleton type="rect" class="q-mt-sm" height="40px" />
-            </q-card-section>
           </q-card>
-        </Slide>
-        <Slide v-else v-for="(item, index) in ViewedProducts" :key="item.id">
-          <q-card class="product-card">
-            <div class="image-container">
-              <q-img
-                :src="
-                  selectedProduct(item)?.image_medium_url ||
-                  selectedProduct(item)?.image
-                "
-                :alt="item.name"
-                :title="item.name"
-                fetchpriority="high"
-                loading="eager"
-                v-if="index === 0"
-                :ratio="1"
-                class="product-image cursor-pointer"
-                @click="goToProductDetail(item.id, item.name)"
-                width="260"
-                height="300"
-                :placeholder-src="placeholderImage"
-              >
-                <template v-slot:loading>
-                  <div class="image-placeholder" />
-                </template>
-                <div v-if="!item.is_in_stock" class="out-of-stock-badge">
-                  Out of Stock
-                </div>
-              </q-img>
-              <q-img
-                :src="
-                  selectedProduct(item)?.image_medium_url ||
-                  selectedProduct(item)?.image
-                "
-                :alt="item.name"
-                :title="item.name"
-                loading="lazy"
-                v-else
-                :ratio="1"
-                class="product-image cursor-pointer"
-                @click="goToProductDetail(item.id, item.name)"
-                width="260"
-                height="300"
-                :placeholder-src="placeholderImage"
-              >
-                <template v-slot:loading>
-                  <div class="image-placeholder" />
-                </template>
-                <div v-if="!item.is_in_stock" class="out-of-stock-badge">
-                  Out of Stock
-                </div>
-              </q-img>
-            </div>
-
-            <!-- Product thumbnails -->
-            <div class="product-images-list" style="overflow: hidden">
-              <div
-                v-for="product in item.products"
-                :key="product.id"
-                class="product-thumb-container"
-                :class="{
-                  selected: selectedProductIds[item.id] === product.id,
-                }"
-                @click="selectProduct(item.id, product.id)"
-              >
-                <q-img
-                  :src="product.image_thumbnail_url || product.image"
-                  :alt="`${item.name} - Variant ${product.id}`"
-                  :title="`${item.name} - Variant ${product.id}`"
-                  :ratio="1"
-                  class="product-thumb"
-                  width="50"
-                  height="50"
-                  loading="lazy"
-                  :placeholder-src="placeholderImage"
-                />
+        </div>
+        <q-card
+          v-else
+          v-for="(item, index) in ViewedProducts.slice(0, 6)"
+          :key="item.id"
+          class="product-card"
+          @click="goToProductDetail(item.id, item.name)"
+        >
+          <div class="image-container">
+            <q-img
+              :src="
+                selectedProduct(item)?.image_medium_url ||
+                selectedProduct(item)?.image
+              "
+              :alt="item.name"
+              :title="item.name"
+              :ratio="1"
+              class="product-image"
+              :placeholder-src="placeholderImage"
+            >
+              <template v-slot:loading>
+                <div class="image-placeholder" />
+              </template>
+              <div v-if="!item.is_in_stock" class="out-of-stock-badge">
+                Out of Stock
               </div>
-            </div>
+            </q-img>
+          </div>
 
-            <q-card-section>
-              <div
-                class="text-subtitle2 product-category cursor-pointer"
-                @click="goToProductDetail(item.id, item.name)"
-              >
-                #{{ item.id }}
-              </div>
-              <div
-                class="text-h6 product-title cursor-pointer"
-                @click="goToProductDetail(item.id, item.name)"
-              >
+          <div class="product-overlay">
+            <div class="product-info">
+              <div class="text-subtitle2 product-category">#{{ item.id }}</div>
+              <div class="text-h6 product-title">
                 {{ item.name }}
               </div>
               <div class="text-subtitle2 product-category">
                 {{ item.category }}
               </div>
-              <div class="text-h6 product-price">
+              <div class="product-price">
                 <div class="price-container">
                   <template v-if="item.discount_percentage > 0">
                     <span class="original-price">NRS {{ item.price }}</span>
@@ -339,32 +221,40 @@
                   </q-badge>
                 </div>
               </div>
-              <div class="row q-gutter-sm justify-center">
+              <div class="product-actions">
                 <q-btn
                   color="primary"
                   class="q-mt-sm"
                   label="Add to Cart"
                   style="width: 100%"
-                  @click="addToCart(item, selectedProduct(item)?.id)"
+                  @click.stop="addToCart(item, selectedProduct(item)?.id)"
                   :disable="!item.is_in_stock"
                 />
-                <!-- <q-btn 
-                outline
-                  color="primary" 
-                  class="q-mt-sm"
-                  label="Checkout"
-                  @click="goToCheckout(selectedProduct(item)?.id)"
-                /> -->
               </div>
-            </q-card-section>
-          </q-card>
-        </Slide>
+            </div>
+          </div>
 
-        <template #addons>
-          <Navigation />
-          <Pagination :page-count="5" class="hide-on-mobile" />
-        </template>
-      </Carousel>
+          <div class="product-images-list" @click.stop>
+            <div
+              v-for="product in item.products"
+              :key="product.id"
+              class="product-thumb-container"
+              :class="{ selected: selectedProductIds[item.id] === product.id }"
+              @click="selectProduct(item.id, product.id)"
+            >
+              <q-img
+                :src="product.image_thumbnail_url || product.image"
+                :alt="`${item.name} - Variant ${product.id}`"
+                :title="`${item.name} - Variant ${product.id}`"
+                :ratio="1"
+                class="product-thumb"
+                loading="lazy"
+                :placeholder-src="placeholderImage"
+              />
+            </div>
+          </div>
+        </q-card>
+      </div>
     </div>
 
     <!-- Top Sellers Section -->
@@ -381,126 +271,61 @@
           map-options
           emit-value
         /> -->
-        <h4 class="title text-bold">Top Sellers</h4>
+        <div class="title-wrapper">
+          <h4 class="title text-bold">Top Sellers</h4>
+          <p class="subtitle">
+            Our most cherished pieces, loved by discerning customers worldwide
+          </p>
+        </div>
         <!-- {{ Categories }} -->
       </div>
 
-      <Carousel
-        :wrap-around="true"
-        :breakpoints="breakpoints"
-        :pagination-enabled="true"
-        :pagination-padding="4"
-        :items-to-show="1"
-        :touch-drag="false"
-      >
-        <Slide v-if="SoldProducts.length === 0">
-          <q-card class="product-card">
+      <div class="products-grid">
+        <div v-if="SoldProducts.length === 0" class="products-grid">
+          <q-card v-for="i in 6" :key="i" class="product-card">
             <div class="image-container">
               <q-skeleton type="rect" class="product-image" height="300px" />
             </div>
-            <q-card-section>
-              <q-skeleton type="text" class="text-subtitle2" />
-              <q-skeleton type="text" class="text-h6 q-my-sm" />
-              <q-skeleton type="text" class="text-subtitle2" />
-              <q-skeleton type="text" class="text-h6 q-my-sm" />
-              <q-skeleton type="rect" class="q-mt-sm" height="40px" />
-            </q-card-section>
           </q-card>
-        </Slide>
-        <Slide v-else v-for="(item, index) in SoldProducts" :key="item.id">
-          <q-card class="product-card">
-            <div class="image-container">
-              <q-img
-                :src="
-                  selectedProduct(item)?.image_medium_url ||
-                  selectedProduct(item)?.image
-                "
-                :alt="item.name"
-                :title="item.name"
-                fetchpriority="high"
-                loading="eager"
-                v-if="index === 0"
-                :ratio="1"
-                class="product-image cursor-pointer"
-                @click="goToProductDetail(item.id, item.name)"
-                width="260"
-                height="300"
-                :placeholder-src="placeholderImage"
-              >
-                <template v-slot:loading>
-                  <div class="image-placeholder" />
-                </template>
-                <div v-if="!item.is_in_stock" class="out-of-stock-badge">
-                  Out of Stock
-                </div>
-              </q-img>
-              <q-img
-                :src="
-                  selectedProduct(item)?.image_medium_url ||
-                  selectedProduct(item)?.image
-                "
-                :alt="item.name"
-                :title="item.name"
-                loading="lazy"
-                v-else
-                :ratio="1"
-                class="product-image cursor-pointer"
-                @click="goToProductDetail(item.id, item.name)"
-                width="260"
-                height="300"
-                :placeholder-src="placeholderImage"
-              >
-                <template v-slot:loading>
-                  <div class="image-placeholder" />
-                </template>
-                <div v-if="!item.is_in_stock" class="out-of-stock-badge">
-                  Out of Stock
-                </div>
-              </q-img>
-            </div>
-
-            <!-- Product thumbnails -->
-            <div class="product-images-list">
-              <div
-                v-for="product in item.products"
-                :key="product.id"
-                class="product-thumb-container"
-                :class="{
-                  selected: selectedProductIds[item.id] === product.id,
-                }"
-                @click="selectProduct(item.id, product.id)"
-              >
-                <q-img
-                  :src="product.image_thumbnail_url || product.image"
-                  :alt="`${item.name} - Variant ${product.id}`"
-                  :title="`${item.name} - Variant ${product.id}`"
-                  :ratio="1"
-                  class="product-thumb"
-                  width="50"
-                  height="50"
-                  loading="lazy"
-                  :placeholder-src="placeholderImage"
-                />
+        </div>
+        <q-card
+          v-else
+          v-for="(item, index) in SoldProducts.slice(0, 6)"
+          :key="item.id"
+          class="product-card"
+          @click="goToProductDetail(item.id, item.name)"
+        >
+          <div class="image-container">
+            <q-img
+              :src="
+                selectedProduct(item)?.image_medium_url ||
+                selectedProduct(item)?.image
+              "
+              :alt="item.name"
+              :title="item.name"
+              :ratio="1"
+              class="product-image"
+              :placeholder-src="placeholderImage"
+            >
+              <template v-slot:loading>
+                <div class="image-placeholder" />
+              </template>
+              <div v-if="!item.is_in_stock" class="out-of-stock-badge">
+                Out of Stock
               </div>
-            </div>
+            </q-img>
+          </div>
 
-            <q-card-section>
-              <div
-                class="text-subtitle2 product-category cursor-pointer"
-                @click="goToProductDetail(item.id, item.name)"
-              >
-                #{{ item.id }}
-              </div>
-              <div
-                class="text-h6 product-title cursor-pointer"
-                @click="goToProductDetail(item.id, item.name)"
-              >
+          <div class="product-overlay">
+            <div class="product-info">
+              <div class="text-subtitle2 product-category">#{{ item.id }}</div>
+              <div class="text-h6 product-title">
                 {{ item.name }}
               </div>
               <div class="text-subtitle2 product-category">
                 {{ item.category }}
               </div>
-              <div class="text-h6 product-price">
+              <div class="product-price">
                 <div class="price-container">
                   <template v-if="item.discount_percentage > 0">
                     <span class="original-price">NRS {{ item.price }}</span>
@@ -523,32 +348,40 @@
                   </q-badge>
                 </div>
               </div>
-              <div class="row q-gutter-sm justify-center">
+              <div class="product-actions">
                 <q-btn
                   color="primary"
                   class="q-mt-sm"
                   label="Add to Cart"
                   style="width: 100%"
-                  @click="addToCart(item, selectedProduct(item)?.id)"
+                  @click.stop="addToCart(item, selectedProduct(item)?.id)"
                   :disable="!item.is_in_stock"
                 />
-                <!-- <q-btn 
-                outline
-                  color="primary" 
-                  class="q-mt-sm"
-                  label="Checkout"
-                  @click="goToCheckout(selectedProduct(item)?.id)"
-                /> -->
               </div>
-            </q-card-section>
-          </q-card>
-        </Slide>
+            </div>
+          </div>
 
-        <template #addons>
-          <Navigation />
-          <Pagination :page-count="5" class="hide-on-mobile" />
-        </template>
-      </Carousel>
+          <div class="product-images-list" @click.stop>
+            <div
+              v-for="product in item.products"
+              :key="product.id"
+              class="product-thumb-container"
+              :class="{ selected: selectedProductIds[item.id] === product.id }"
+              @click="selectProduct(item.id, product.id)"
+            >
+              <q-img
+                :src="product.image_thumbnail_url || product.image"
+                :alt="`${item.name} - Variant ${product.id}`"
+                :title="`${item.name} - Variant ${product.id}`"
+                :ratio="1"
+                class="product-thumb"
+                loading="lazy"
+                :placeholder-src="placeholderImage"
+              />
+            </div>
+          </div>
+        </q-card>
+      </div>
     </div>
 
     <q-dialog v-model="orderDialog">
@@ -890,7 +723,7 @@ const setupImageObserver = () => {
 </script>
 
 <style lang="scss">
-.product-slider {
+.product-grid {
   padding: 2rem 0;
   width: 100%;
   max-width: 1800px;
@@ -898,94 +731,153 @@ const setupImageObserver = () => {
 }
 
 .section-container {
-  margin-bottom: 3rem;
-  content-visibility: auto;
-  contain-intrinsic-size: 700px;
+  margin-bottom: 2rem;
 }
 
-.section-title {
-  text-align: center;
+.header-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin-bottom: 2rem;
-  font-size: 2rem;
-  color: #333;
 }
+
+.title-wrapper {
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
 .title {
   font-family: "Playfair Display", serif;
   margin: 0;
-  width: 100%;
+  font-size: 2rem;
+  color: #2c3e50;
   text-align: center;
+  position: relative;
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 2px;
+    background-color: #1976d2;
+  }
 }
-.product-card {
-  transition: transform 0.3s ease;
-  width: 260px;
+
+.subtitle {
+  font-family: "Playfair Display", serif;
+  font-size: 1.1rem;
+  color: #666;
+  line-height: 1.6;
+  margin: 0;
+  font-style: italic;
+  letter-spacing: 0.3px;
+}
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  padding: 0 1.5rem;
+  max-width: 1400px;
   margin: 0 auto;
-  height: 600px;
+}
+
+.product-card {
+  transition: all 0.3s ease;
+  background: #fff;
+  border: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 1;
   display: flex;
   flex-direction: column;
-  will-change: transform;
+  cursor: pointer;
 }
 
 .product-card:hover {
   transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
 .image-container {
-  flex: 0 0 300px;
-  width: 100%;
   position: relative;
-  background-color: #f0f0f0;
+  background-color: #f8f8f8;
   overflow: hidden;
-  margin-bottom: 0;
+  aspect-ratio: 1;
+  width: 100%;
 }
 
-.product-images-list {
-  flex: 0 0 60px;
+.product-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.product-card:hover .product-image {
+  transform: scale(1.1);
+}
+
+.product-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.95);
   display: flex;
-  gap: 8px;
-  padding: 5px 10px;
+  align-items: center;
   justify-content: center;
-  overflow-x: auto;
-  // background-color: #f8f8f8;
-  margin: 0;
+  opacity: 0;
+  transition: all 0.3s ease;
+  padding: 2rem;
+  pointer-events: none;
 }
 
-.q-card-section {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  padding: 12px !important;
-  min-height: 230px;
-  overflow: hidden;
+.product-card:hover .product-overlay,
+.product-card:active .product-overlay {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.product-info {
+  text-align: center;
+  width: 100%;
+  max-width: 80%;
 }
 
 .product-title {
-  font-size: 1rem;
-  line-height: 1.2;
-  margin: 0.25rem 0;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  font-size: 1.2rem;
+  line-height: 1.4;
+  margin: 0.5rem 0;
+  font-family: "Playfair Display", serif;
+  color: #2c3e50;
 }
 
 .product-category {
   color: #666;
   font-size: 0.85rem;
   margin: 0.25rem 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .product-price {
-  margin: 0.5rem 0;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+  margin-top: 1rem;
 }
 
 .price-container {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: center;
   gap: 8px;
 }
 
@@ -998,110 +890,41 @@ const setupImageObserver = () => {
 .final-price {
   font-weight: bold;
   color: #2c3e50;
-  font-size: 1rem;
+  font-size: 1.2rem;
+  font-family: "Playfair Display", serif;
 }
 
 .discount-badge {
   background-color: #ffd700;
   color: #2c3e50;
-  padding: 5px 8px 3px 7px;
-  border-radius: 4px;
-  font-size: 0.8rem;
-}
-
-:deep(.carousel__viewport) {
-  width: 100%;
-  padding: 0 20px;
-}
-
-:deep(.carousel__slide) {
-  padding: 10px 15px;
-  width: 260px !important;
-  min-width: 260px;
-  min-height: 600px;
-}
-
-:deep(.carousel__track) {
-  gap: 1.5rem;
-  padding: 0.5rem 0;
-  will-change: transform;
-}
-
-:deep(.carousel__prev),
-:deep(.carousel__next) {
-  background-color: #1976d2;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  color: white;
-  margin: 0 -10px;
-}
-
-:deep(.carousel__pagination) {
-  padding: 0;
-  margin-top: 20px;
-  flex-wrap: wrap;
-  max-width: 100%;
-  overflow: hidden;
-}
-
-:deep(.carousel__pagination-button) {
-  background-color: #ccc;
-}
-
-:deep(.carousel__pagination-button--active) {
-  background-color: #1976d2;
-}
-
-.header-container {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  margin-bottom: 20px;
-  position: relative;
-}
-
-.category-select {
-  width: 200px;
-  left: 0;
-}
-
-.tags-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  margin: 8px 0;
-}
-
-.tag-chip {
-  font-size: 0.8rem;
-  padding: 2px 8px;
-}
-
-@media (max-width: 599px) {
-  .hide-on-mobile {
-    display: none !important;
-  }
-}
-
-.product-image {
-  // width: 100%;
-  height: 100%;
-  max-width: 260px;
-  max-height: 300px;
-  object-fit: cover;
-}
-
-.out-of-stock-badge {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background-color: rgba(255, 0, 0, 0.8);
-  color: white;
   padding: 4px 8px;
   border-radius: 4px;
-  font-weight: bold;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.product-images-list {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.95);
+  border-top: 1px solid #eee;
+  opacity: 0;
+  transform: translateY(100%);
+  transition: all 0.3s ease;
+  pointer-events: none;
+}
+
+.product-card:hover .product-images-list,
+.product-card:active .product-images-list {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
 }
 
 .product-thumb-container {
@@ -1123,31 +946,134 @@ const setupImageObserver = () => {
 }
 
 .product-thumb {
-  border-radius: 2px;
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-@media (max-width: 600px) {
-  .product-thumb-container {
-    width: 40px;
-    height: 40px;
+.out-of-stock-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: rgba(255, 0, 0, 0.8);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: bold;
+  z-index: 1;
+}
+
+.product-actions {
+  margin-top: 1rem;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.3s ease;
+}
+
+.product-card:hover .product-actions,
+.product-card:active .product-actions {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (max-width: 1200px) {
+  .products-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+    padding: 0 1rem;
   }
 }
 
-.image-placeholder {
-  background-color: #f0f0f0;
-  width: 100%;
-  height: 100%;
-}
+@media (max-width: 600px) {
+  .products-grid {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    gap: 1rem;
+    padding: 0.5rem 1rem;
+    margin: 0 -1rem;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+    &::-webkit-scrollbar {
+      display: none; /* Chrome, Safari, Opera */
+    }
+  }
 
-.section-container {
-  content-visibility: auto;
-  contain-intrinsic-size: 700px;
-}
+  .product-card {
+    flex: 0 0 85%;
+    scroll-snap-align: start;
+    margin-right: 1rem;
+    aspect-ratio: 1;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
 
-.carousel__track {
-  will-change: transform;
+  .section-container {
+    margin-bottom: 2.5rem;
+  }
+
+  .header-container {
+    margin-bottom: 1.5rem;
+    padding: 0 1rem;
+  }
+
+  .title {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .subtitle {
+    font-size: 0.9rem;
+    line-height: 1.4;
+    color: #666;
+    margin-bottom: 1rem;
+  }
+
+  .product-info {
+    max-width: 90%;
+  }
+
+  .product-overlay {
+    opacity: 1;
+    pointer-events: auto;
+    background: rgba(255, 255, 255, 0.98);
+    padding: 1.5rem;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+  }
+
+  .product-card:active .product-overlay {
+    transform: translateY(0);
+  }
+
+  .product-actions {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .product-images-list {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+    background: rgba(255, 255, 255, 0.98);
+  }
+
+  .product-thumb-container {
+    width: 40px;
+    height: 40px;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  .product-thumb-container:active {
+    transform: scale(0.95);
+  }
+
+  .product-image {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
 }
 </style>
