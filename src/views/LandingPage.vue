@@ -4,6 +4,7 @@
     <WomensWear id="shop" />
     <ProductSlider id="sale" />
     <AboutUs id="about" />
+    <LandingBlogsSection id="blog" />
     <Review />
 
     <!-- Floating Checkout Button -->
@@ -40,6 +41,7 @@ import CarouselComponent from "@/components/landing/CarouselComponent.vue";
 import WomensWear from "@/components/landing/WomensWear.vue";
 import ProductSlider from "@/components/landing/ProductSlider.vue";
 import AboutUs from "@/components/landing/AboutUs.vue";
+import LandingBlogsSection from "@/components/landing/LandingBlogsSection.vue";
 // import Video from "@/components/landing/Video.vue";
 // import Review from "@/components/landing/Review.vue";
 import { useGeneralStore } from "@/stores/general";

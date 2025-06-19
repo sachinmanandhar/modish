@@ -75,6 +75,16 @@ const router = createRouter({
           },
         },
         {
+          path: "/blogs",
+          name: "blog-list-page",
+          component: () => import("@/views/BlogListPage.vue"),
+        },
+        {
+          path: "/blog/:blogSlug",
+          name: "blog-detail-page",
+          component: () => import("@/views/BlogDetail.vue"),
+        },
+        {
           path: "/checkout",
           name: "checkout",
           component: () => import("@/views/CheckoutView.vue"),

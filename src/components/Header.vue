@@ -106,6 +106,9 @@ const scrollToSection = (route: string) => {
 const quickLinks = [
   { title: "Home", route: "/" },
   { title: "Shop", route: "/product" },
+
+  { title: "Blogs", route: "/blogs" },
+
   // { title: 'Sale', route: '#sale' },
   { title: "About Us", route: "/about" },
 

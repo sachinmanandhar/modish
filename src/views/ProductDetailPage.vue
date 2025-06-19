@@ -258,6 +258,8 @@ const selectedVariantImage = computed(() => {
   max-width: 1400px;
   margin: 3rem auto;
   padding: 0 2rem;
+  overflow-x: hidden;
+  width: 100%;
 }
 
 .product-grid {
@@ -265,11 +267,14 @@ const selectedVariantImage = computed(() => {
   grid-template-columns: 1.2fr 1fr;
   gap: 4rem;
   align-items: start;
+  width: 100%;
 }
 
 .product-image-container {
   position: sticky;
   top: 2rem;
+  width: 100%;
+  max-width: 100%;
 }
 
 .product-image-detail {
@@ -277,14 +282,18 @@ const selectedVariantImage = computed(() => {
   border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  max-height: 700px;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8f8f8;
 }
 
 .product-image-detail img {
   width: 100%;
-  height: auto;
+  height: 100%;
   object-fit: contain;
-  max-height: 700px;
+  max-width: 100%;
 }
 
 .product-info {
@@ -386,28 +395,73 @@ const selectedVariantImage = computed(() => {
 
 /* Responsive Design */
 @media (max-width: 768px) {
+  .product-detail-container {
+    margin: 1rem auto;
+    padding: 0 1rem;
+    overflow-x: hidden;
+  }
+
   .product-grid {
     grid-template-columns: 1fr;
+    gap: 2rem;
+    width: 100%;
   }
 
   .product-image-container {
     position: static;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .product-image-detail {
+    aspect-ratio: 1;
+    max-height: 400px;
   }
 
   .product-title {
-    font-size: 2rem;
+    font-size: 1.75rem;
   }
 
-  .price {
+  .price-container {
+    flex-wrap: wrap;
+
+    .original-price {
+      font-size: 1.25rem;
+    }
+
+    .final-price {
+      font-size: 1.5rem;
+    }
+  }
+
+  .actions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .actions .q-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .product-detail-container {
+    margin: 0.5rem auto;
+    padding: 0 0.5rem;
+    overflow-x: hidden;
+  }
+
+  .product-grid {
+    gap: 1rem;
+  }
+
+  .product-title {
     font-size: 1.5rem;
   }
 
   .product-image-detail {
-    max-height: 500px;
-  }
-
-  .product-image img {
-    max-height: 500px;
+    aspect-ratio: 4/3;
+    max-height: 350px;
   }
 }
 

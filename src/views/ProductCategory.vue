@@ -459,6 +459,8 @@ const onCategoryChange = async (value: any) => {
 .product-list-container {
   max-width: 1400px;
   margin: 0 auto;
+  overflow-x: hidden;
+  width: 100%;
 }
 
 .filter-section {
@@ -475,6 +477,7 @@ const onCategoryChange = async (value: any) => {
   margin: 0 auto;
   background: white;
   border: 1px solid #eee;
+  width: 100%;
 
   &:hover {
     border-color: transparent;
@@ -488,12 +491,14 @@ const onCategoryChange = async (value: any) => {
   .image-container {
     position: relative;
     overflow: hidden;
+    width: 100%;
 
     .product-image {
       transition: transform 0.3s ease;
       height: 300px;
       object-fit: cover;
       cursor: pointer;
+      width: 100%;
     }
   }
 
@@ -536,12 +541,20 @@ const onCategoryChange = async (value: any) => {
     padding: 0.75rem;
   }
 
+  .product-list-container {
+    padding: 0;
+  }
+
+  .products-container {
+    padding: 8px;
+  }
+
   .product-card {
     max-width: 100%;
 
     .image-container {
       .product-image {
-        // height: 250px;
+        height: 250px;
       }
     }
 
@@ -603,6 +616,14 @@ const onCategoryChange = async (value: any) => {
   padding: 10px;
   justify-content: center;
   overflow-x: auto;
+  width: 100%;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+
+  &::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+  }
 }
 
 .product-thumb-container {
@@ -647,6 +668,8 @@ const onCategoryChange = async (value: any) => {
   padding: 16px;
   border-radius: 8px;
   background: #fff;
+  width: 100%;
+  overflow-x: hidden;
 }
 
 .price-container {
